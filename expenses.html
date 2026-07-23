@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>Expenses — Get Gorgeous</title>
+<link rel="manifest" href="manifest.json">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+  <div class="app-shell">
+    <nav class="sidebar" id="sidebar"></nav>
+    <main class="main">
+      <div class="topbar" id="topbar"></div>
+
+      <div class="grid" style="grid-template-columns: 1fr 1.4fr; gap:16px; align-items:start;">
+        <div class="card">
+          <h3 class="mb-16">Add Expense</h3>
+          <div class="field">
+            <label>Category *</label>
+            <select id="expCategory">
+              <option>Rent</option>
+              <option>Salary</option>
+              <option>Electricity</option>
+              <option>Marketing</option>
+              <option>Purchase</option>
+              <option>Other</option>
+            </select>
+          </div>
+          <div class="grid grid-2">
+            <div class="field"><label>Amount (₹) *</label><input type="number" id="expAmount" min="0"></div>
+            <div class="field"><label>Date *</label><input type="date" id="expDate"></div>
+          </div>
+          <div class="field"><label>Notes</label><textarea id="expNotes" rows="2"></textarea></div>
+          <div class="field">
+            <label>Bill Photo (optional)</label>
+            <input type="file" accept="image/*" capture="environment" id="expPhoto">
+          </div>
+          <button class="btn btn-primary" style="width:100%;" onclick="saveExpense()">Save Expense</button>
+        </div>
+
+        <div>
+          <div class="grid grid-2 mb-16">
+            <div class="card stat-card accent">
+              <div class="label">This Month</div>
+              <div class="value" id="statMonthTotal">₹0</div>
+            </div>
+            <div class="card stat-card">
+              <div class="label">Today</div>
+              <div class="value" id="statTodayTotal">₹0</div>
+            </div>
+          </div>
+          <div class="card">
+            <h3 class="mb-16">All Expenses</h3>
+            <div id="expenseList"></div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script src="assets/js/db.js"></script>
+  <script src="assets/js/shell.js"></script>
+  <script src="assets/js/expenses.js"></script>
+</body>
+</html>

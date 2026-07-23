@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>Customer Profile — Get Gorgeous</title>
+<link rel="manifest" href="manifest.json">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/style.css">
+<style>
+  .photo-thumb { width: 100%; aspect-ratio: 1; object-fit: cover; border-radius: var(--radius-sm); border: 1px solid var(--line); }
+  .photo-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: 8px; }
+</style>
+</head>
+<body>
+  <div class="app-shell">
+    <nav class="sidebar" id="sidebar"></nav>
+    <main class="main">
+      <div class="topbar" id="topbar"></div>
+
+      <a href="customers.html" class="btn btn-ghost mb-16" style="padding-left:0;">← Back to Customers</a>
+
+      <div class="grid" style="grid-template-columns: 1fr 1.3fr; gap:16px; align-items:start;">
+        <!-- Left: profile + loyalty -->
+        <div>
+          <div class="card mb-16">
+            <div class="flex" style="justify-content: space-between;">
+              <h2 id="profName">—</h2>
+              <button class="btn btn-secondary" onclick="editModal.showModal()">Edit</button>
+            </div>
+            <div class="text-soft mb-16" id="profMobile">—</div>
+            <div class="grid grid-2" style="font-size:0.88rem;">
+              <div><span class="text-soft">DOB</span><br><span id="profDob">—</span></div>
+              <div><span class="text-soft">Anniversary</span><br><span id="profAnniversary">—</span></div>
+              <div><span class="text-soft">Skin Type</span><br><span id="profSkin">—</span></div>
+              <div><span class="text-soft">Preferred Beautician</span><br><span id="profBeautician">—</span></div>
+            </div>
+            <div class="mt-16" id="profNotesWrap" style="display:none;">
+              <span class="text-soft" style="font-size:0.85rem;">Allergies / Notes</span>
+              <div id="profNotes"></div>
+            </div>
+          </div>
+
+          <div class="card">
+            <h3 class="mb-16">Loyalty Points</h3>
+            <div class="stat-card gold" style="padding:0;">
+              <div class="value" id="loyaltyPoints">0 pts</div>
+              <div class="label">≈ ₹<span id="loyaltyValue">0</span> redeemable value</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right: history + photos -->
+        <div>
+          <div class="card mb-16">
+            <h3 class="mb-16">Visit History</h3>
+            <div id="visitHistory"><div class="empty-state text-soft">No visits yet.</div></div>
+          </div>
+
+          <div class="card">
+            <div class="flex mb-16" style="justify-content: space-between;">
+              <h3>Before / After Photos</h3>
+              <div class="flex gap-8">
+                <label class="btn btn-secondary" style="margin:0;">
+                  + Before <input type="file" accept="image/*" capture="environment" id="beforeInput" style="display:none;">
+                </label>
+                <label class="btn btn-secondary" style="margin:0;">
+                  + After <input type="file" accept="image/*" capture="environment" id="afterInput" style="display:none;">
+                </label>
+              </div>
+            </div>
+            <div class="photo-grid" id="photoGrid"></div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- Edit Modal -->
+  <dialog id="editModal" style="border:none; border-radius: 20px; padding: 0; width: min(520px, 92vw);">
+    <form method="dialog" id="editForm" class="card" style="border:none; box-shadow:none;">
+      <h2 class="mb-16">Edit Customer</h2>
+      <div class="grid grid-2">
+        <div class="field"><label>Name *</label><input type="text" id="editName" required></div>
+        <div class="field"><label>Mobile *</label><input type="tel" id="editMobile" required></div>
+        <div class="field"><label>DOB</label><input type="date" id="editDob"></div>
+        <div class="field"><label>Anniversary</label><input type="date" id="editAnniversary"></div>
+      </div>
+      <div class="field"><label>Address</label><input type="text" id="editAddress"></div>
+      <div class="grid grid-2">
+        <div class="field"><label>Skin Type</label>
+          <select id="editSkinType"><option value="">—</option><option>Normal</option><option>Oily</option><option>Dry</option><option>Combination</option><option>Sensitive</option></select>
+        </div>
+        <div class="field"><label>Preferred Beautician</label><input type="text" id="editBeautician"></div>
+      </div>
+      <div class="field"><label>Allergies / Notes</label><textarea id="editNotes" rows="2"></textarea></div>
+      <div class="flex gap-12" style="justify-content: flex-end;">
+        <button type="button" class="btn btn-ghost" onclick="document.getElementById('editModal').close()">Cancel</button>
+        <button type="submit" class="btn btn-primary">Save</button>
+      </div>
+    </form>
+  </dialog>
+
+  <script src="assets/js/db.js"></script>
+  <script src="assets/js/shell.js"></script>
+  <script src="assets/js/customer-profile.js"></script>
+</body>
+</html>

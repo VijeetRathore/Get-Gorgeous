@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>Inventory — Get Gorgeous</title>
+<link rel="manifest" href="manifest.json">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+  <div class="app-shell">
+    <nav class="sidebar" id="sidebar"></nav>
+    <main class="main">
+      <div class="topbar" id="topbar"></div>
+
+      <div class="flex gap-8 mb-16">
+        <button class="btn btn-secondary" data-tab="products" onclick="switchTab('products')" id="tabBtn-products">Products & Stock</button>
+        <button class="btn btn-ghost" data-tab="purchase" onclick="switchTab('purchase')" id="tabBtn-purchase">Purchase Entry</button>
+        <button class="btn btn-ghost" data-tab="services" onclick="switchTab('services')" id="tabBtn-services">Services</button>
+      </div>
+
+      <!-- Products & Stock -->
+      <div id="tab-products">
+        <div class="flex mb-16" style="justify-content: space-between;">
+          <h3>Products</h3>
+          <button class="btn btn-primary" onclick="openProductModal()">+ New Product</button>
+        </div>
+        <div class="card" style="padding:0;"><div id="productList"></div></div>
+      </div>
+
+      <!-- Purchase Entry -->
+      <div id="tab-purchase" style="display:none;">
+        <div class="card" style="max-width: 560px;">
+          <h3 class="mb-16">Record a Purchase</h3>
+          <div class="field"><label>Supplier</label><input id="purSupplier" type="text"></div>
+          <div class="field"><label>Invoice No.</label><input id="purInvoice" type="text"></div>
+          <div class="field">
+            <label>Product</label>
+            <select id="purProduct"></select>
+          </div>
+          <div class="grid grid-2">
+            <div class="field"><label>Qty Added</label><input id="purQty" type="number" min="0" step="any"></div>
+            <div class="field"><label>Amount Paid (₹)</label><input id="purAmount" type="number" min="0"></div>
+          </div>
+          <button class="btn btn-primary" onclick="recordPurchase()">Save Purchase & Update Stock</button>
+        </div>
+        <h3 class="mt-16 mb-16">Recent Purchases</h3>
+        <div class="card" style="padding:0;"><div id="purchaseList"></div></div>
+      </div>
+
+      <!-- Services -->
+      <div id="tab-services" style="display:none;">
+        <div class="flex mb-16" style="justify-content: space-between;">
+          <h3>Services</h3>
+          <button class="btn btn-primary" onclick="openServiceModal()">+ New Service</button>
+        </div>
+        <div class="card" style="padding:0;"><div id="serviceList"></div></div>
+      </div>
+    </main>
+  </div>
+
+  <!-- Product Modal -->
+  <dialog id="productModal" style="border:none; border-radius: 20px; padding: 0; width: min(480px, 92vw);">
+    <form method="dialog" id="productForm" class="card" style="border:none; box-shadow:none;">
+      <h2 class="mb-16">New Product</h2>
+      <input type="hidden" id="prodId">
+      <div class="field"><label>Product Name *</label><input id="prodName" required></div>
+      <div class="grid grid-2">
+        <div class="field"><label>Brand</label><input id="prodBrand"></div>
+        <div class="field"><label>Category</label><input id="prodCategory"></div>
+      </div>
+      <div class="grid grid-2">
+        <div class="field"><label>Size</label><input id="prodSize" placeholder="e.g. 500"></div>
+        <div class="field"><label>Unit</label>
+          <select id="prodUnit"><option value="ml">ml</option><option value="g">g</option><option value="pc">pc</option></select>
+        </div>
+      </div>
+      <div class="grid grid-2">
+        <div class="field"><label>Purchase Cost (₹)</label><input id="prodPurchaseCost" type="number" min="0"></div>
+        <div class="field"><label>Selling Cost (₹)</label><input id="prodSellingCost" type="number" min="0"></div>
+      </div>
+      <div class="grid grid-2">
+        <div class="field"><label>Opening Stock</label><input id="prodStock" type="number" min="0" step="any"></div>
+        <div class="field"><label>Low Stock Alert Below</label><input id="prodLowStock" type="number" min="0" value="5"></div>
+      </div>
+      <div class="flex gap-12" style="justify-content: flex-end;">
+        <button type="button" class="btn btn-ghost" onclick="document.getElementById('productModal').close()">Cancel</button>
+        <button type="submit" class="btn btn-primary">Save Product</button>
+      </div>
+    </form>
+  </dialog>
+
+  <!-- Service Modal -->
+  <dialog id="serviceModal" style="border:none; border-radius: 20px; padding: 0; width: min(560px, 92vw);">
+    <form method="dialog" id="serviceForm" class="card" style="border:none; box-shadow:none;">
+      <h2 class="mb-16">New Service</h2>
+      <input type="hidden" id="svcId">
+      <div class="grid grid-2">
+        <div class="field"><label>Service Name *</label><input id="svcName" required></div>
+        <div class="field"><label>Price (₹) *</label><input id="svcPrice" type="number" min="0" required></div>
+      </div>
+      <div class="field"><label>Duration (minutes)</label><input id="svcDuration" type="number" min="0"></div>
+      <label>Product Consumption (optional)</label>
+      <div id="svcConsumptionRows"></div>
+      <button type="button" class="btn btn-secondary mb-16" onclick="addConsumptionRow()">+ Add Product Used</button>
+      <div class="flex gap-12" style="justify-content: flex-end;">
+        <button type="button" class="btn btn-ghost" onclick="document.getElementById('serviceModal').close()">Cancel</button>
+        <button type="submit" class="btn btn-primary">Save Service</button>
+      </div>
+    </form>
+  </dialog>
+
+  <script src="assets/js/db.js"></script>
+  <script src="assets/js/shell.js"></script>
+  <script src="assets/js/inventory.js"></script>
+</body>
+</html>

@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>Appointments — Get Gorgeous</title>
+<link rel="manifest" href="manifest.json">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+  <div class="app-shell">
+    <nav class="sidebar" id="sidebar"></nav>
+    <main class="main">
+      <div class="topbar" id="topbar"></div>
+
+      <div class="flex gap-12 mb-16" style="justify-content: space-between; flex-wrap: wrap;">
+        <input type="date" id="dateFilter">
+        <button class="btn btn-primary" onclick="openApptModal()">+ New Appointment</button>
+      </div>
+
+      <div class="card" style="padding:0;">
+        <div id="apptList"></div>
+      </div>
+    </main>
+  </div>
+
+  <!-- Appointment Modal -->
+  <dialog id="apptModal" style="border:none; border-radius: 20px; padding: 0; width: min(520px, 92vw);">
+    <form method="dialog" id="apptForm" class="card" style="border:none; box-shadow:none;">
+      <h2 class="mb-16">New Appointment</h2>
+      <input type="hidden" id="apptId">
+      <div class="field">
+        <label>Customer *</label>
+        <select id="apptCustomer" required></select>
+      </div>
+      <div class="field">
+        <label>Services</label>
+        <select id="apptServices" multiple size="4"></select>
+        <div class="text-soft" style="font-size:0.78rem;">Ctrl/Cmd-click to select multiple</div>
+      </div>
+      <div class="grid grid-2">
+        <div class="field"><label>Beautician</label><input id="apptBeautician" type="text"></div>
+        <div class="field"><label>Date & Time *</label><input id="apptDateTime" type="datetime-local" required></div>
+      </div>
+      <div class="flex gap-12" style="justify-content: flex-end;">
+        <button type="button" class="btn btn-ghost" onclick="document.getElementById('apptModal').close()">Cancel</button>
+        <button type="submit" class="btn btn-primary">Save Appointment</button>
+      </div>
+    </form>
+  </dialog>
+
+  <script src="assets/js/db.js"></script>
+  <script src="assets/js/shell.js"></script>
+  <script src="assets/js/appointments.js"></script>
+</body>
+</html>

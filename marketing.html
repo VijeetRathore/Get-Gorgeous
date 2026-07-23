@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>Marketing — Get Gorgeous</title>
+<link rel="manifest" href="manifest.json">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+  <div class="app-shell">
+    <nav class="sidebar" id="sidebar"></nav>
+    <main class="main">
+      <div class="topbar" id="topbar"></div>
+
+      <div class="grid" style="grid-template-columns: 1fr 1.3fr; gap:16px; align-items:start;">
+        <div class="card">
+          <h3 class="mb-16">Send a WhatsApp Message</h3>
+          <div class="field">
+            <label>Customer</label>
+            <select id="mktCustomer"></select>
+          </div>
+          <div class="field">
+            <label>Template</label>
+            <select id="mktTemplate">
+              <option value="thankyou">Bill Thank You</option>
+              <option value="loyalty">Loyalty Points Update</option>
+              <option value="review">Ask for Google Review</option>
+              <option value="birthday">Birthday Wish</option>
+              <option value="anniversary">Anniversary Wish</option>
+              <option value="reminder">Appointment Reminder</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>Message Preview (editable)</label>
+            <textarea id="mktPreview" rows="6"></textarea>
+          </div>
+          <a id="mktSendBtn" class="btn btn-primary" style="width:100%; text-decoration:none;" href="#" target="_blank">Open in WhatsApp</a>
+        </div>
+
+        <div>
+          <div class="card mb-16">
+            <h3 class="mb-16">Social Engagement Links</h3>
+            <div class="field"><label>Google Review Link</label><input id="setReview" placeholder="https://g.page/r/..."></div>
+            <div class="field"><label>Instagram Handle / Link</label><input id="setInstagram" placeholder="https://instagram.com/yoursalon"></div>
+            <div class="field"><label>Facebook Page Link</label><input id="setFacebook" placeholder="https://facebook.com/yoursalon"></div>
+            <div class="field"><label>Google Maps Location Link</label><input id="setMaps" placeholder="https://maps.app.goo.gl/..."></div>
+            <button class="btn btn-secondary" onclick="saveSocialLinks()">Save Links</button>
+          </div>
+
+          <div class="card">
+            <h3 class="mb-16">Quick Share Buttons</h3>
+            <div class="flex gap-8" style="flex-wrap:wrap;">
+              <a class="btn btn-secondary" id="btnReview" href="#" target="_blank">⭐ Google Review</a>
+              <a class="btn btn-secondary" id="btnInsta" href="#" target="_blank">📸 Instagram</a>
+              <a class="btn btn-secondary" id="btnFb" href="#" target="_blank">👍 Facebook</a>
+              <a class="btn btn-secondary" id="btnMaps" href="#" target="_blank">📍 Location</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script src="assets/js/db.js"></script>
+  <script src="assets/js/shell.js"></script>
+  <script src="assets/js/marketing.js"></script>
+</body>
+</html>

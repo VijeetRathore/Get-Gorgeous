@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>Reports — Get Gorgeous</title>
+<link rel="manifest" href="manifest.json">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+  <div class="app-shell">
+    <nav class="sidebar" id="sidebar"></nav>
+    <main class="main">
+      <div class="topbar" id="topbar"></div>
+
+      <div class="flex gap-12 mb-16" style="flex-wrap: wrap;">
+        <div class="field" style="margin:0;"><label>From</label><input type="date" id="fromDate"></div>
+        <div class="field" style="margin:0;"><label>To</label><input type="date" id="toDate"></div>
+        <button class="btn btn-secondary" style="align-self:flex-end;" onclick="setRange('today')">Today</button>
+        <button class="btn btn-secondary" style="align-self:flex-end;" onclick="setRange('month')">This Month</button>
+        <button class="btn btn-primary" style="align-self:flex-end;" onclick="loadReports()">Apply</button>
+      </div>
+
+      <div class="grid grid-4 mb-16">
+        <div class="card stat-card accent"><div class="label">Total Sales</div><div class="value" id="statSales">₹0</div></div>
+        <div class="card stat-card"><div class="label">Expenses</div><div class="value" id="statExpenses">₹0</div></div>
+        <div class="card stat-card"><div class="label">Product Cost (approx)</div><div class="value" id="statProductCost">₹0</div></div>
+        <div class="card stat-card gold"><div class="label">Net Profit</div><div class="value" id="statProfit">₹0</div></div>
+      </div>
+
+      <div class="grid grid-2 mb-16">
+        <div class="card">
+          <h3 class="mb-16">Customer Analytics</h3>
+          <div class="list-row"><span>New Customers</span><strong id="statNewCust">0</strong></div>
+          <div class="list-row"><span>Repeat Customers</span><strong id="statRepeatCust">0</strong></div>
+          <h4 class="mt-16 mb-16">Top Customers</h4>
+          <div id="topCustomers"></div>
+        </div>
+        <div class="card">
+          <h3 class="mb-16">Inventory Snapshot</h3>
+          <div class="list-row"><span>Low Stock Items</span><strong id="statLowStock">0</strong></div>
+          <h4 class="mt-16 mb-16">Top Consumed Products</h4>
+          <div id="topProducts"></div>
+        </div>
+      </div>
+
+      <div class="card mb-16">
+        <h3 class="mb-16">Staff Attendance (in range)</h3>
+        <div id="staffAttendance"></div>
+      </div>
+
+      <div class="card">
+        <h3 class="mb-16">Export Reports (CSV)</h3>
+        <div class="flex gap-8" style="flex-wrap:wrap;">
+          <button class="btn btn-secondary" onclick="exportSales()">Sales Report</button>
+          <button class="btn btn-secondary" onclick="exportExpenses()">Expense Report</button>
+          <button class="btn btn-secondary" onclick="exportCustomers()">Customer Report</button>
+          <button class="btn btn-secondary" onclick="exportInventory()">Inventory Report</button>
+          <button class="btn btn-secondary" onclick="exportStaff()">Staff Report</button>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script src="assets/js/db.js"></script>
+  <script src="assets/js/shell.js"></script>
+  <script src="assets/js/reports.js"></script>
+</body>
+</html>

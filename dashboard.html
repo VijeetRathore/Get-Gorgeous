@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>Dashboard — Get Gorgeous</title>
+<link rel="manifest" href="manifest.json">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+  <div class="app-shell">
+    <nav class="sidebar" id="sidebar"></nav>
+    <main class="main">
+      <div class="topbar" id="topbar"></div>
+
+      <div class="grid grid-4 mb-16">
+        <div class="card stat-card accent">
+          <div class="label">Today's Sales</div>
+          <div class="value" id="statSales">₹0</div>
+        </div>
+        <div class="card stat-card">
+          <div class="label">Today's Customers</div>
+          <div class="value" id="statCustomers">0</div>
+        </div>
+        <div class="card stat-card">
+          <div class="label">Appointments Today</div>
+          <div class="value" id="statAppts">0</div>
+        </div>
+        <div class="card stat-card gold">
+          <div class="label">Low Stock Items</div>
+          <div class="value" id="statLowStock">0</div>
+        </div>
+      </div>
+
+      <div class="grid grid-2">
+        <div class="card">
+          <h3 class="mb-16">Recent Bills</h3>
+          <div id="recentBills"><div class="empty-state"><div class="icon">₹</div>No bills yet today.</div></div>
+        </div>
+        <div class="card">
+          <h3 class="mb-16">Low Stock Alerts</h3>
+          <div id="lowStockList"><div class="empty-state"><div class="icon">▤</div>Stock levels look fine.</div></div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script src="assets/js/db.js"></script>
+  <script src="assets/js/shell.js"></script>
+  <script>
+    renderShell('dashboard.html', 'Today');
+
+    async function loadDashboard() {
+      const bills = await DB.getAll('bills');
+      const customers = await DB.getAll('customers');
+      const appts = await DB.getAll('appointments');
+      const products = await DB.getAll('products');
+
+      const todayStr = new Date().toDateString();
+      const todaysBills = bills.filter(b => new Date(b.createdAt).toDateString() === todayStr);
+      const todaysAppts = appts.filter(a => a.scheduledAt && new Date(a.scheduledAt).toDateString() === todayStr);
+      const todaysCustomerIds = new Set(todaysBills.map(b => b.customerId));
+
+      document.getElementById('statSales').textContent = fmtCurrency(todaysBills.reduce((s, b) => s + (b.total || 0), 0));
+      document.getElementById('statCustomers').textContent = todaysCustomerIds.size;
+      document.getElementById('statAppts').textContent = todaysAppts.length;
+
+      const lowStock = products.filter(p => (p.currentStock || 0) <= (p.lowStockThreshold || 5));
+      document.getElementById('statLowStock').textContent = lowStock.length;
+
+      if (todaysBills.length) {
+        document.getElementById('recentBills').innerHTML = todaysBills
+          .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+          .slice(0, 6)
+          .map(b => {
+            const cust = customers.find(c => c.id === b.customerId);
+            return `<div class="list-row">
+              <span>${cust ? cust.name : 'Walk-in'}</span>
+              <span class="flex gap-8"><span class="text-soft">${fmtDateTime(b.createdAt)}</span><strong>${fmtCurrency(b.total)}</strong></span>
+            </div>`;
+          }).join('');
+      }
+
+      if (lowStock.length) {
+        document.getElementById('lowStockList').innerHTML = lowStock.map(p => `
+          <div class="list-row">
+            <span>${p.name} <span class="text-soft">(${p.size || ''})</span></span>
+            <span class="badge warn">${p.currentStock} ${p.unit || ''} left</span>
+          </div>
+        `).join('');
+      }
+    }
+    loadDashboard();
+  </script>
+</body>
+</html>
