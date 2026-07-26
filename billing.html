@@ -108,6 +108,13 @@
             <div class="field"><label>Selling Price (₹) *</label><input id="qProdSellingCost" type="number" min="0" required></div>
             <div class="field"><label>Opening Stock</label><input id="qProdStock" type="number" min="0" value="0"></div>
           </div>
+          <div class="field"><label>Unit</label><input id="qProdUnit" list="unitSuggestionsQ" placeholder="e.g. ml, g, pc, strip">
+            <datalist id="unitSuggestionsQ">
+              <option value="ml"><option value="l"><option value="g"><option value="kg">
+              <option value="pc"><option value="pair"><option value="strip"><option value="sachet">
+              <option value="tube"><option value="bottle"><option value="set">
+            </datalist>
+          </div>
           <p class="text-soft" style="font-size:0.78rem;">More details (brand, cost price, etc.) can be added later in Stock → Products.</p>
           <div class="flex gap-12" style="justify-content: flex-end;">
             <button type="button" class="btn btn-ghost" onclick="document.getElementById('quickProductModal').close()">Cancel</button>

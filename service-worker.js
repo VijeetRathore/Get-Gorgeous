@@ -4,7 +4,7 @@
    the tablet to pick up the new version.
    ============================================ */
 
-const CACHE_NAME = 'get-gorgeous-v8';
+const CACHE_NAME = 'get-gorgeous-v9';
 
 const APP_SHELL = [
   './index.html',
@@ -23,6 +23,7 @@ const APP_SHELL = [
   './assets/css/style.css',
   './assets/js/db.js',
   './assets/js/shell.js',
+  './assets/js/pin-guard.js',
   './assets/js/sync.js',
   './assets/js/reminders.js',
   './assets/js/settings.js',
@@ -71,7 +72,7 @@ self.addEventListener('fetch', (event) => {
           }
           return response;
         })
-        .catch(() => caches.match('./dashboard.html'));
+        .catch(() => caches.match('./customers.html'));
     })
   );
 });

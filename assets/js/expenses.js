@@ -6,6 +6,17 @@ renderShell('expenses.html', 'Expenses');
 
 document.getElementById('expDate').value = new Date().toISOString().slice(0, 10);
 
+function updateNotesRequirement() {
+  const isOther = document.getElementById('expCategory').value === 'Other';
+  const notes = document.getElementById('expNotes');
+  const label = document.getElementById('expNotesLabel');
+  notes.required = isOther;
+  notes.placeholder = isOther ? 'Please describe what this expense was for (required)' : '';
+  label.textContent = isOther ? 'Notes *  (required for "Other")' : 'Notes';
+}
+document.getElementById('expCategory').addEventListener('change', updateNotesRequirement);
+updateNotesRequirement();
+
 function resizeImageFile(file, maxWidth = 900, quality = 0.7) {
   return new Promise((resolve, reject) => {
     const img = new Image();
@@ -33,6 +44,7 @@ async function saveExpense() {
   const file = document.getElementById('expPhoto').files[0];
 
   if (!amount || !date) return alert('Amount aur Date bharna zaroori hai.');
+  if (category === 'Other' && !notes) return alert('"Other" select kiya hai — kripya Notes mein details likhein.');
 
   let photoDataUrl = null;
   if (file) photoDataUrl = await resizeImageFile(file);

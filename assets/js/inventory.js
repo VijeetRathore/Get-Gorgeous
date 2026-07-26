@@ -15,7 +15,14 @@ function switchTab(tab) {
     const btn = document.getElementById(`tabBtn-${t}`);
     btn.className = t === tab ? 'btn btn-secondary' : 'btn btn-ghost';
   });
-  if (tab === 'purchase') populatePurchaseProductSelect();
+  if (tab === 'purchase') {
+    document.querySelectorAll('#purchaseRows .purRowProduct').forEach(sel => {
+      const prev = sel.value;
+      sel.innerHTML = purchaseProductOptions();
+      if (prev) sel.value = prev;
+    });
+    populatePurchaseProductSelect();
+  }
 }
 
 /* ---------- Products ---------- */
@@ -59,7 +66,7 @@ function openProductModal(id) {
       document.getElementById('prodBrand').value = p.brand || '';
       document.getElementById('prodCategory').value = p.category || '';
       document.getElementById('prodSize').value = p.size || '';
-      document.getElementById('prodUnit').value = p.unit || 'ml';
+      document.getElementById('prodUnit').value = p.unit || '';
       document.getElementById('prodPurchaseCost').value = p.purchaseCost || '';
       document.getElementById('prodSellingCost').value = p.sellingCost || '';
       document.getElementById('prodStock').value = p.currentStock || 0;
@@ -77,7 +84,7 @@ document.getElementById('productForm').addEventListener('submit', async () => {
     brand: document.getElementById('prodBrand').value.trim(),
     category: document.getElementById('prodCategory').value.trim(),
     size: document.getElementById('prodSize').value.trim(),
-    unit: document.getElementById('prodUnit').value,
+    unit: document.getElementById('prodUnit').value.trim(),
     purchaseCost: Number(document.getElementById('prodPurchaseCost').value) || 0,
     sellingCost: Number(document.getElementById('prodSellingCost').value) || 0,
     lowStockThreshold: Number(document.getElementById('prodLowStock').value) || 5,
@@ -92,38 +99,58 @@ document.getElementById('productForm').addEventListener('submit', async () => {
   await loadProducts();
 });
 
-/* ---------- Purchases ---------- */
+/* ---------- Purchases (multiple products per invoice) ---------- */
+
+function purchaseProductOptions() {
+  return allProducts.map(p => `<option value="${p.id}">${p.name} (${p.currentStock ?? 0} ${p.unit || ''} in stock)</option>`).join('');
+}
+
+function addPurchaseRow() {
+  const row = document.createElement('div');
+  row.className = 'flex gap-8 mb-16 purchase-row';
+  row.innerHTML = `
+    <select class="purRowProduct" style="flex:1.4;">${purchaseProductOptions()}</select>
+    <input class="purRowQty" type="number" min="0" step="any" placeholder="Qty added" style="max-width:110px;">
+    <input class="purRowAmount" type="number" min="0" placeholder="Amount ₹" style="max-width:110px;">
+    <button type="button" class="btn btn-ghost" onclick="this.parentElement.remove()">✕</button>
+  `;
+  document.getElementById('purchaseRows').appendChild(row);
+}
 
 function populatePurchaseProductSelect() {
-  const sel = document.getElementById('purProduct');
-  sel.innerHTML = allProducts.map(p => `<option value="${p.id}">${p.name} (${p.currentStock ?? 0} ${p.unit || ''} in stock)</option>`).join('');
+  if (!document.getElementById('purchaseRows').children.length) addPurchaseRow();
 }
 
 async function recordPurchase() {
-  const productId = document.getElementById('purProduct').value;
-  const qty = Number(document.getElementById('purQty').value);
-  const amount = Number(document.getElementById('purAmount').value) || 0;
-  if (!productId || !qty) return alert('Select a product and enter quantity added.');
+  const rows = Array.from(document.querySelectorAll('#purchaseRows .purchase-row'));
+  const items = rows.map(row => ({
+    productId: row.querySelector('.purRowProduct').value,
+    qty: Number(row.querySelector('.purRowQty').value) || 0,
+    amount: Number(row.querySelector('.purRowAmount').value) || 0,
+  })).filter(i => i.productId && i.qty > 0);
 
-  const product = await DB.get('products', productId);
-  const newStock = (product.currentStock || 0) + qty;
-  await DB.update('products', productId, { currentStock: newStock });
+  if (!items.length) return alert('Add at least one product with a quantity.');
+
+  for (const item of items) {
+    const product = await DB.get('products', item.productId);
+    const newStock = (product.currentStock || 0) + item.qty;
+    await DB.update('products', item.productId, { currentStock: newStock });
+    await DB.add('stockTransactions', { productId: item.productId, type: 'purchase', qty: item.qty, note: 'Purchase entry' });
+  }
 
   await DB.add('purchases', {
     supplier: document.getElementById('purSupplier').value.trim(),
     invoiceNo: document.getElementById('purInvoice').value.trim(),
-    productId, qty, amount,
+    items,
+    totalAmount: items.reduce((s, i) => s + i.amount, 0),
   });
-
-  await DB.add('stockTransactions', { productId, type: 'purchase', qty, note: 'Purchase entry' });
 
   document.getElementById('purSupplier').value = '';
   document.getElementById('purInvoice').value = '';
-  document.getElementById('purQty').value = '';
-  document.getElementById('purAmount').value = '';
+  document.getElementById('purchaseRows').innerHTML = '';
+  addPurchaseRow();
 
   await loadProducts();
-  populatePurchaseProductSelect();
   await loadPurchases();
 }
 
@@ -138,10 +165,16 @@ async function loadPurchases() {
     .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
     .slice(0, 15)
     .map(pu => {
-      const prod = allProducts.find(p => p.id === pu.productId);
-      return `<div class="list-row">
-        <span>${prod ? prod.name : '—'} <span class="text-soft">× ${pu.qty}</span></span>
-        <span class="flex gap-8"><span class="text-soft">${pu.supplier || ''}</span><strong>${fmtCurrency(pu.amount)}</strong></span>
+      const itemsText = (pu.items || []).map(i => {
+        const prod = allProducts.find(p => p.id === i.productId);
+        return `${prod ? prod.name : 'Unknown'} × ${i.qty}`;
+      }).join(', ');
+      return `<div class="list-row" style="align-items:flex-start;">
+        <div>
+          <div style="font-weight:600;">${pu.supplier || 'Purchase'} ${pu.invoiceNo ? '· ' + pu.invoiceNo : ''}</div>
+          <div class="text-soft" style="font-size:0.85rem;">${itemsText}</div>
+        </div>
+        <strong>${fmtCurrency(pu.totalAmount)}</strong>
       </div>`;
     }).join('');
 }
@@ -171,10 +204,16 @@ function addConsumptionRow(productId = '', qty = '') {
   const row = document.createElement('div');
   row.className = 'flex gap-8 mb-16';
   row.innerHTML = `
-    <select class="consProduct">${allProducts.map(p => `<option value="${p.id}" ${p.id === productId ? 'selected' : ''}>${p.name}</option>`).join('')}</select>
-    <input class="consQty" type="number" min="0" step="any" placeholder="Qty used" value="${qty}" style="max-width:120px;">
+    <select class="consProduct">${allProducts.map(p => `<option value="${p.id}" data-unit="${p.unit || ''}" ${p.id === productId ? 'selected' : ''}>${p.name}</option>`).join('')}</select>
+    <input class="consQty" type="number" min="0" step="any" placeholder="Qty used" value="${qty}" style="max-width:100px;">
+    <span class="consUnit text-soft" style="min-width:36px; align-self:center; font-size:0.85rem;"></span>
     <button type="button" class="btn btn-ghost" onclick="this.parentElement.remove()">✕</button>
   `;
+  const select = row.querySelector('.consProduct');
+  const unitLabel = row.querySelector('.consUnit');
+  const updateUnit = () => { unitLabel.textContent = select.selectedOptions[0]?.dataset.unit || ''; };
+  select.addEventListener('change', updateUnit);
+  updateUnit();
   document.getElementById('svcConsumptionRows').appendChild(row);
 }
 

@@ -179,4 +179,37 @@ function showBillConfirmation(bill, customer, newPointsBalance) {
   document.getElementById('billConfirmModal').showModal();
 }
 
+const quickServiceModal = document.getElementById('quickServiceModal');
+const quickProductModal = document.getElementById('quickProductModal');
+
+document.getElementById('quickServiceForm').addEventListener('submit', async () => {
+  const name = document.getElementById('qSvcName').value.trim();
+  const price = Number(document.getElementById('qSvcPrice').value) || 0;
+  if (!name || !price) return;
+
+  const newService = await DB.add('services', { name, price, durationMin: 0, consumption: [] });
+  services.push(newService);
+  document.getElementById('serviceSelect').innerHTML = services.map(s => `<option value="${s.id}">${s.name} — ${fmtCurrency(s.price)}</option>`).join('');
+  document.getElementById('serviceSelect').value = newService.id;
+
+  document.getElementById('quickServiceForm').reset();
+  quickServiceModal.close();
+});
+
+document.getElementById('quickProductForm').addEventListener('submit', async () => {
+  const name = document.getElementById('qProdName').value.trim();
+  const sellingCost = Number(document.getElementById('qProdSellingCost').value) || 0;
+  const currentStock = Number(document.getElementById('qProdStock').value) || 0;
+  const unit = document.getElementById('qProdUnit').value.trim();
+  if (!name || !sellingCost) return;
+
+  const newProduct = await DB.add('products', { name, sellingCost, currentStock, unit, purchaseCost: 0, lowStockThreshold: 5 });
+  products.push(newProduct);
+  document.getElementById('productSelect').innerHTML = products.map(p => `<option value="${p.id}">${p.name} — ${fmtCurrency(p.sellingCost)} (${p.currentStock ?? 0} left)</option>`).join('');
+  document.getElementById('productSelect').value = newProduct.id;
+
+  document.getElementById('quickProductForm').reset();
+  quickProductModal.close();
+});
+
 init();

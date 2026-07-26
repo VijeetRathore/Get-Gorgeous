@@ -31,19 +31,18 @@
 
       <!-- Purchase Entry -->
       <div id="tab-purchase" style="display:none;">
-        <div class="card" style="max-width: 560px;">
+        <div class="card" style="max-width: 640px;">
           <h3 class="mb-16">Record a Purchase</h3>
-          <div class="field"><label>Supplier</label><input id="purSupplier" type="text"></div>
-          <div class="field"><label>Invoice No.</label><input id="purInvoice" type="text"></div>
-          <div class="field">
-            <label>Product</label>
-            <select id="purProduct"></select>
-          </div>
           <div class="grid grid-2">
-            <div class="field"><label>Qty Added</label><input id="purQty" type="number" min="0" step="any"></div>
-            <div class="field"><label>Amount Paid (₹)</label><input id="purAmount" type="number" min="0"></div>
+            <div class="field"><label>Supplier</label><input id="purSupplier" type="text"></div>
+            <div class="field"><label>Invoice No.</label><input id="purInvoice" type="text"></div>
           </div>
-          <button class="btn btn-primary" onclick="recordPurchase()">Save Purchase & Update Stock</button>
+
+          <label>Products in this Invoice</label>
+          <div id="purchaseRows"></div>
+          <button type="button" class="btn btn-secondary mb-16" onclick="addPurchaseRow()">+ Add Product</button>
+
+          <button class="btn btn-primary" style="width:100%;" onclick="recordPurchase()">Save Purchase & Update Stock</button>
         </div>
         <h3 class="mt-16 mb-16">Recent Purchases</h3>
         <div class="card" style="padding:0;"><div id="purchaseList"></div></div>
@@ -73,7 +72,12 @@
       <div class="grid grid-2">
         <div class="field"><label>Size</label><input id="prodSize" placeholder="e.g. 500"></div>
         <div class="field"><label>Unit</label>
-          <select id="prodUnit"><option value="ml">ml</option><option value="g">g</option><option value="pc">pc</option></select>
+          <input id="prodUnit" list="unitSuggestions" placeholder="e.g. ml, g, pc, strip">
+          <datalist id="unitSuggestions">
+            <option value="ml"><option value="l"><option value="g"><option value="kg">
+            <option value="pc"><option value="pair"><option value="strip"><option value="sachet">
+            <option value="tube"><option value="bottle"><option value="set">
+          </datalist>
         </div>
       </div>
       <div class="grid grid-2">

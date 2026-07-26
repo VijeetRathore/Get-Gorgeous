@@ -1,7 +1,7 @@
 {
   "name": "Get Gorgeous — Salon CRM",
   "short_name": "Get Gorgeous",
-  "start_url": "./index.html",
+  "start_url": "./customers.html",
   "display": "standalone",
   "orientation": "any",
   "background_color": "#FFFDFB",
