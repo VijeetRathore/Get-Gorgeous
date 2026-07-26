@@ -13,6 +13,7 @@ const NAV_ITEMS = [
   { href: 'staff.html',        icon: '⚇', label: 'Staff' },
   { href: 'marketing.html',    icon: '✉', label: 'Marketing' },
   { href: 'reports.html',      icon: '◫', label: 'Reports' },
+  { href: 'settings.html',     icon: '⚙', label: 'Settings' },
 ];
 
 function renderShell(activeHref, pageTitle) {
@@ -75,6 +76,16 @@ function fmtDateTime(iso) {
   if (!iso) return '—';
   const d = new Date(iso);
   return d.toLocaleString('en-IN', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' });
+}
+
+/** Builds a working wa.me link. WhatsApp requires the full country code with no
+ *  leading + or 0 — a bare 10-digit Indian number will silently fail to open a chat.
+ *  Assumes India (91) when the cleaned number is exactly 10 digits; leaves longer
+ *  numbers (already has a country code) untouched. */
+function buildWhatsAppLink(mobile, text) {
+  let clean = String(mobile || '').replace(/\D/g, '');
+  if (clean.length === 10) clean = '91' + clean;
+  return `https://wa.me/${clean}?text=${encodeURIComponent(text)}`;
 }
 
 if ('serviceWorker' in navigator) {

@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>Settings — Get Gorgeous</title>
+<link rel="manifest" href="manifest.json">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+  <div class="app-shell">
+    <nav class="sidebar" id="sidebar"></nav>
+    <main class="main">
+      <div class="topbar" id="topbar"></div>
+
+      <div class="grid grid-2" style="align-items:start; gap:16px;">
+        <div>
+          <div class="card mb-16">
+            <h3 class="mb-16">☁️ Cloud Sync (Google Sheets + Drive)</h3>
+            <div class="field"><label>Apps Script Web App URL</label><input id="setGasUrl" placeholder="https://script.google.com/macros/s/.../exec"></div>
+            <div class="field"><label>Secret Token</label><input id="setGasToken" type="password" placeholder="Same token you set in Code.gs"></div>
+            <button class="btn btn-secondary mb-16" onclick="saveSyncConfig()">Save Sync Settings</button>
+            <div class="list-row"><span>Status</span><span id="syncStatusText" class="text-soft">Not configured</span></div>
+            <div class="list-row"><span>Last synced</span><span id="lastSyncedText" class="text-soft">Never</span></div>
+            <div class="list-row"><span>Pending records</span><strong id="pendingCount">0</strong></div>
+            <button class="btn btn-primary mt-16" style="width:100%;" onclick="runSyncNow()">Sync Now</button>
+            <div id="syncLog" class="text-soft mt-16" style="font-size:0.8rem;"></div>
+          </div>
+
+          <div class="card">
+            <h3 class="mb-16">🔔 Appointment Reminders</h3>
+            <p class="text-soft mb-16" style="font-size:0.85rem;">Shows a notification ~30 min before an appointment, while the app is open on this tablet.</p>
+            <div class="list-row"><span>Status</span><span id="notifStatus" class="text-soft">—</span></div>
+            <button class="btn btn-secondary" onclick="enableReminders()">Enable Reminders</button>
+          </div>
+        </div>
+
+        <div>
+          <div class="card mb-16">
+            <h3 class="mb-16">💾 Local Backup</h3>
+            <p class="text-soft mb-16" style="font-size:0.85rem;">Extra safety net beyond cloud sync — download all data as a JSON file, or restore from one.</p>
+            <div class="flex gap-8 mb-16">
+              <button class="btn btn-secondary" onclick="exportBackup()">Download Backup (JSON)</button>
+              <label class="btn btn-secondary" style="margin:0;">Restore from File<input type="file" accept=".json" id="restoreFile" style="display:none;"></label>
+            </div>
+          </div>
+
+          <div class="card mb-16">
+            <h3 class="mb-16">☁️ Restore from Cloud</h3>
+            <p class="text-soft mb-16" style="font-size:0.85rem;">Pull all data from Google Sheets back into this tablet (use only if local data was lost/reset).</p>
+            <button class="btn btn-secondary" onclick="restoreFromCloud()">Restore from Cloud</button>
+          </div>
+
+          <div class="card">
+            <h3 class="mb-16">🔒 Change PIN</h3>
+            <div class="field"><label>New PIN</label><input type="password" id="newPin" inputmode="numeric" maxlength="6"></div>
+            <button class="btn btn-secondary" onclick="changePin()">Update PIN</button>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script src="assets/js/db.js"></script>
+  <script src="assets/js/shell.js"></script>
+  <script src="assets/js/sync.js"></script>
+  <script src="assets/js/reminders.js"></script>
+  <script src="assets/js/settings.js"></script>
+</body>
+</html>

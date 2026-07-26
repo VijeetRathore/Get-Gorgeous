@@ -141,6 +141,44 @@ const DB = {
     return this.getByIndex(storeName, 'synced', false);
   },
 
+  /** Flip synced=true on a record WITHOUT re-dirtying it (unlike .update, which always resets synced:false). */
+  async markSynced(storeName, id) {
+    const db = await openDB();
+    return new Promise((resolve, reject) => {
+      const tx = db.transaction(storeName, 'readwrite');
+      const store = tx.objectStore(storeName);
+      const getReq = store.get(id);
+      getReq.onsuccess = () => {
+        const existing = getReq.result;
+        if (!existing) return resolve(null);
+        existing.synced = true;
+        store.put(existing);
+        resolve(existing);
+      };
+      getReq.onerror = (e) => reject(e.target.error);
+    });
+  },
+
+  /** Same idea for the photos store's `uploaded` flag + attaching the returned Drive URL. */
+  async markPhotoUploaded(id, driveUrl) {
+    const db = await openDB();
+    return new Promise((resolve, reject) => {
+      const tx = db.transaction('photos', 'readwrite');
+      const store = tx.objectStore('photos');
+      const getReq = store.get(id);
+      getReq.onsuccess = () => {
+        const existing = getReq.result;
+        if (!existing) return resolve(null);
+        existing.uploaded = true;
+        existing.synced = true;
+        existing.driveUrl = driveUrl;
+        store.put(existing);
+        resolve(existing);
+      };
+      getReq.onerror = (e) => reject(e.target.error);
+    });
+  },
+
   // ---- settings helpers (keyPath: 'key', not part of sync) ----
   async setSetting(key, value) {
     const db = await openDB();

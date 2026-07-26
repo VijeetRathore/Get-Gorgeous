@@ -54,8 +54,8 @@ function updateSendLink() {
     btn.href = '#';
     return;
   }
-  const mobile = customer.mobile.replace(/\D/g, '');
-  btn.href = `https://wa.me/${mobile}?text=${encodeURIComponent(text)}`;
+  const mobile = customer.mobile;
+  btn.href = buildWhatsAppLink(mobile, text);
 }
 
 /* ---------- Social links ---------- */

@@ -49,6 +49,8 @@
 
   <script src="assets/js/db.js"></script>
   <script src="assets/js/shell.js"></script>
+  <script src="assets/js/sync.js"></script>
+  <script src="assets/js/reminders.js"></script>
   <script>
     renderShell('dashboard.html', 'Today');
 
@@ -84,13 +86,30 @@
       }
 
       if (lowStock.length) {
-        document.getElementById('lowStockList').innerHTML = lowStock.map(p => `
+        document.getElementById('lowStockList').innerHTML = await Promise.all(lowStock.map(async p => {
+          const eta = await estimateStockoutDays(p);
+          return `
           <div class="list-row">
             <span>${p.name} <span class="text-soft">(${p.size || ''})</span></span>
-            <span class="badge warn">${p.currentStock} ${p.unit || ''} left</span>
-          </div>
-        `).join('');
+            <span class="flex gap-8">
+              ${eta ? `<span class="text-soft" style="font-size:0.78rem;">~${eta} days left</span>` : ''}
+              <span class="badge warn">${p.currentStock} ${p.unit || ''} left</span>
+            </span>
+          </div>`;
+        })).then(rows => rows.join(''));
       }
+    }
+
+    async function estimateStockoutDays(product) {
+      const allTx = await DB.getByIndex('stockTransactions', 'productId', product.id);
+      const cutoff = new Date(); cutoff.setDate(cutoff.getDate() - 14);
+      const recentConsumption = allTx.filter(t => t.type === 'consumption' && new Date(t.createdAt) >= cutoff);
+      if (!recentConsumption.length) return null;
+      const totalUsed = recentConsumption.reduce((s, t) => s + t.qty, 0);
+      const daysSpan = Math.max(1, (new Date() - cutoff) / (1000 * 60 * 60 * 24));
+      const dailyRate = totalUsed / daysSpan;
+      if (dailyRate <= 0) return null;
+      return Math.max(0, Math.round((product.currentStock || 0) / dailyRate));
     }
     loadDashboard();
   </script>

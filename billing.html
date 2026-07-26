@@ -21,6 +21,10 @@
             <label>Customer *</label>
             <select id="billCustomer"></select>
           </div>
+          <div class="field">
+            <label>Staff / Beautician</label>
+            <select id="billStaff"><option value="">— Not assigned —</option></select>
+          </div>
 
           <label>Add Service</label>
           <div class="flex gap-8 mb-16">
@@ -68,11 +72,23 @@
           <button class="btn btn-primary" style="width:100%;" onclick="saveBill()">Save & Complete Bill</button>
         </div>
       </div>
+      <!-- Bill Confirmation (shown after save) -->
+      <dialog id="billConfirmModal" style="border:none; border-radius: 20px; padding: 0; width: min(420px, 92vw);">
+        <div class="card" style="border:none; box-shadow:none; text-align:center;">
+          <div style="font-size:2rem;">✅</div>
+          <h2 class="mb-16">Bill Saved</h2>
+          <div class="text-soft mb-16" id="confirmSummary"></div>
+          <a id="confirmWhatsappBtn" class="btn btn-primary" style="width:100%; text-decoration:none; margin-bottom:10px;" href="#" target="_blank">📱 Send Bill on WhatsApp</a>
+          <button class="btn btn-secondary" style="width:100%;" onclick="window.location.href='dashboard.html'">Done</button>
+        </div>
+      </dialog>
     </main>
   </div>
 
   <script src="assets/js/db.js"></script>
   <script src="assets/js/shell.js"></script>
+  <script src="assets/js/sync.js"></script>
+  <script src="assets/js/reminders.js"></script>
   <script src="assets/js/billing.js"></script>
 </body>
 </html>

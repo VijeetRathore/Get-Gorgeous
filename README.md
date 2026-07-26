@@ -1,2 +1,0 @@
-# Get-Gorgeous
-Parlour ERP

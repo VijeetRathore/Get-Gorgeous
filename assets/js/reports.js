@@ -89,13 +89,23 @@ async function loadReports() {
       }).join('')
     : '<div class="text-soft">No consumption recorded in this range.</div>';
 
-  // Staff attendance
+  // Staff attendance + revenue
   const attInRange = attendance.filter(a => inRange(a.date, from, to));
   document.getElementById('staffAttendance').innerHTML = staff.length
     ? staff.map(s => {
         const present = attInRange.filter(a => a.staffId === s.id && a.status === 'Present').length;
         const absent = attInRange.filter(a => a.staffId === s.id && a.status === 'Absent').length;
-        return `<div class="list-row"><span>${s.name}</span><span><span class="badge success">${present} present</span> <span class="badge warn">${absent} absent</span></span></div>`;
+        const revenue = billsInRange.filter(b => b.staffId === s.id).reduce((sum, b) => sum + (b.total || 0), 0);
+        const commission = revenue * ((s.commissionRate || 0) / 100);
+        return `<div class="list-row">
+          <span>${s.name}</span>
+          <span class="flex gap-8">
+            <span class="badge success">${present} present</span>
+            <span class="badge warn">${absent} absent</span>
+            <strong>${fmtCurrency(revenue)}</strong>
+            ${s.commissionRate ? `<span class="text-soft" style="font-size:0.78rem;">(₹${Math.round(commission)} commission)</span>` : ''}
+          </span>
+        </div>`;
       }).join('')
     : '<div class="text-soft">No staff added yet.</div>';
 }
@@ -159,11 +169,17 @@ function exportInventory() {
 function exportStaff() {
   const { from, to } = currentRange();
   const attInRange = attendance.filter(a => inRange(a.date, from, to));
-  const rows = staff.map(s => ({
-    Name: s.name, Mobile: s.mobile || '', Salary: s.salary || 0, CommissionRate: s.commissionRate || 0,
-    PresentDays: attInRange.filter(a => a.staffId === s.id && a.status === 'Present').length,
-    AbsentDays: attInRange.filter(a => a.staffId === s.id && a.status === 'Absent').length,
-  }));
+  const billsInRangeForStaff = bills.filter(b => inRange(b.createdAt, from, to));
+  const rows = staff.map(s => {
+    const revenue = billsInRangeForStaff.filter(b => b.staffId === s.id).reduce((sum, b) => sum + (b.total || 0), 0);
+    return {
+      Name: s.name, Mobile: s.mobile || '', Salary: s.salary || 0, CommissionRate: s.commissionRate || 0,
+      PresentDays: attInRange.filter(a => a.staffId === s.id && a.status === 'Present').length,
+      AbsentDays: attInRange.filter(a => a.staffId === s.id && a.status === 'Absent').length,
+      RevenueGenerated: revenue,
+      CommissionEarned: Math.round(revenue * ((s.commissionRate || 0) / 100)),
+    };
+  });
   downloadCsv(`staff-report_${from}_to_${to}.csv`, rows);
 }
 

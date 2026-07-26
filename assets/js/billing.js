@@ -8,17 +8,26 @@ renderShell('billing.html', 'New Bill');
 let customers = [];
 let services = [];
 let products = [];
+let staffList = [];
+let lastSalonName = 'Get Gorgeous';
 let lineItems = []; // { type: 'service'|'product', refId, name, qty, price, consumption? }
 
 async function init() {
   customers = await DB.getAll('customers');
   services = await DB.getAll('services');
   products = await DB.getAll('products');
+  staffList = await DB.getAll('staff');
+  lastSalonName = await DB.getSetting('salonName', 'Get Gorgeous');
 
   document.getElementById('billCustomer').innerHTML =
     '<option value="">— Select customer —</option>' +
     customers.sort((a, b) => a.name.localeCompare(b.name))
       .map(c => `<option value="${c.id}">${c.name} (${c.mobile})</option>`).join('');
+
+  document.getElementById('billStaff').innerHTML =
+    '<option value="">— Not assigned —</option>' +
+    staffList.sort((a, b) => a.name.localeCompare(b.name))
+      .map(s => `<option value="${s.id}">${s.name}</option>`).join('');
 
   document.getElementById('serviceSelect').innerHTML = services.length
     ? services.map(s => `<option value="${s.id}">${s.name} — ${fmtCurrency(s.price)}</option>`).join('')
@@ -110,9 +119,13 @@ async function saveBill() {
   const total = Math.max(0, subtotal - discount - redeem);
   const pointsEarned = Math.floor(total / 100);
   const paymentMode = document.getElementById('paymentMode').value;
+  const staffId = document.getElementById('billStaff').value;
+  const staffMember = staffList.find(s => s.id === staffId);
 
   const bill = await DB.add('bills', {
     customerId: custId,
+    staffId: staffId || null,
+    staffName: staffMember ? staffMember.name : null,
     items: lineItems.map(i => ({ type: i.type, refId: i.refId, name: i.name, qty: i.qty, price: i.price })),
     subtotal, discount, pointsRedeemed: redeem, total, paymentMode, pointsEarned,
   });
@@ -137,13 +150,33 @@ async function saveBill() {
     }
   }
 
-  // Update loyalty points
   const customer = customers.find(c => c.id === custId);
-  const newPoints = (customer.loyaltyPoints || 0) - redeem + pointsEarned;
-  await DB.update('customers', custId, { loyaltyPoints: Math.max(0, newPoints) });
+  const newPoints = Math.max(0, (customer.loyaltyPoints || 0) - redeem + pointsEarned);
+  await DB.update('customers', custId, { loyaltyPoints: newPoints });
 
-  alert(`Bill saved — ${fmtCurrency(total)} (${paymentMode}). Points earned: ${pointsEarned}.`);
-  window.location.href = 'dashboard.html';
+  showBillConfirmation(bill, customer, newPoints);
+}
+
+function showBillConfirmation(bill, customer, newPointsBalance) {
+  document.getElementById('confirmSummary').innerHTML =
+    `${customer.name} — <strong>${fmtCurrency(bill.total)}</strong> (${bill.paymentMode})<br>+${bill.pointsEarned} loyalty points earned`;
+
+  const itemLines = bill.items.map(i => `• ${i.name}${i.qty > 1 ? ' x' + i.qty : ''} — ${fmtCurrency(i.price * i.qty)}`).join('\n');
+  let message = `Hi ${customer.name}, thank you for visiting ${lastSalonName}! 💇\n\n${itemLines}\n`;
+  if (bill.discount) message += `Discount: -${fmtCurrency(bill.discount)}\n`;
+  if (bill.pointsRedeemed) message += `Points Redeemed: -${bill.pointsRedeemed}\n`;
+  message += `Total Paid: ${fmtCurrency(bill.total)} (${bill.paymentMode})\n`;
+  message += `Loyalty Points Earned: +${bill.pointsEarned} (Balance: ${newPointsBalance})\n\nSee you again soon!`;
+
+  const waBtn = document.getElementById('confirmWhatsappBtn');
+  if (customer.mobile) {
+    waBtn.href = buildWhatsAppLink(customer.mobile, message);
+    waBtn.style.display = 'inline-flex';
+  } else {
+    waBtn.style.display = 'none';
+  }
+
+  document.getElementById('billConfirmModal').showModal();
 }
 
 init();

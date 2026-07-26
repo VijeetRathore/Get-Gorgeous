@@ -4,7 +4,7 @@
    the tablet to pick up the new version.
    ============================================ */
 
-const CACHE_NAME = 'get-gorgeous-v4';
+const CACHE_NAME = 'get-gorgeous-v7';
 
 const APP_SHELL = [
   './index.html',
@@ -18,10 +18,14 @@ const APP_SHELL = [
   './staff.html',
   './marketing.html',
   './reports.html',
+  './settings.html',
   './manifest.json',
   './assets/css/style.css',
   './assets/js/db.js',
   './assets/js/shell.js',
+  './assets/js/sync.js',
+  './assets/js/reminders.js',
+  './assets/js/settings.js',
   './assets/js/customers.js',
   './assets/js/customer-profile.js',
   './assets/js/billing.js',
@@ -31,6 +35,8 @@ const APP_SHELL = [
   './assets/js/staff.js',
   './assets/js/marketing.js',
   './assets/js/reports.js',
+  './assets/icons/icon-192.png',
+  './assets/icons/icon-512.png',
 ];
 
 self.addEventListener('install', (event) => {
