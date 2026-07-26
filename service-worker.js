@@ -4,7 +4,7 @@
    the tablet to pick up the new version.
    ============================================ */
 
-const CACHE_NAME = 'get-gorgeous-v10';
+const CACHE_NAME = 'get-gorgeous-v11';
 
 const APP_SHELL = [
   './index.html',
