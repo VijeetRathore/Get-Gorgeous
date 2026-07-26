@@ -23,7 +23,7 @@
         <input type="password" id="pinGuardInput" inputmode="numeric" maxlength="6" placeholder="••••" style="text-align:center;letter-spacing:0.5em;font-size:1.4rem;width:100%;min-height:48px;padding:10px 14px;border:1.5px solid var(--line,#EBE1DD);border-radius:8px;">
       </div>
       <button class="btn btn-primary" id="pinGuardSubmit" style="width:100%;">Unlock</button>
-      <a href="customers.html" class="btn btn-ghost" style="width:100%;margin-top:8px;text-decoration:none;display:inline-flex;">← Back</a>
+      <a href="home.html" class="btn btn-ghost" style="width:100%;margin-top:8px;text-decoration:none;display:inline-flex;">← Back</a>
       <div id="pinGuardError" style="color:var(--danger,#A6314F);margin-top:12px;display:none;font-size:0.85rem;">Wrong PIN, try again.</div>
     </div>
   `;

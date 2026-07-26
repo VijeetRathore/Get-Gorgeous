@@ -1,45 +1,20 @@
 /* ============================================
-   shell.js — renders the sidebar nav + topbar
-   on every page. Keeps nav markup in one place.
+   shell.js — renders the top nav bar (Back/Home)
+   on every inner page. home.html (the launcher
+   grid) does NOT call this — it has its own markup.
    ============================================ */
 
-const NAV_ITEMS = [
-  { href: 'dashboard.html',    icon: '⌂', label: 'Home' },
-  { href: 'customers.html',    icon: '☺', label: 'Customers' },
-  { href: 'billing.html',      icon: '₹', label: 'Billing' },
-  { href: 'inventory.html',    icon: '▤', label: 'Stock' },
-  { href: 'appointments.html', icon: '◷', label: 'Bookings' },
-  { href: 'expenses.html',     icon: '⛁', label: 'Expenses' },
-  { href: 'staff.html',        icon: '⚇', label: 'Staff' },
-  { href: 'marketing.html',    icon: '✉', label: 'Marketing' },
-  { href: 'reports.html',      icon: '◫', label: 'Reports' },
-  { href: 'settings.html',     icon: '⚙', label: 'Settings' },
-];
-
 function renderShell(activeHref, pageTitle) {
-  const current = window.location.pathname.split('/').pop() || 'dashboard.html';
-
-  const navHtml = NAV_ITEMS.map((item) => `
-    <a class="nav-item ${item.href === activeHref ? 'active' : ''}" href="${item.href}">
-      <span class="icon">${item.icon}</span>
-      <span>${item.label}</span>
-    </a>
-  `).join('');
-
-  document.getElementById('sidebar').innerHTML = `
-    <div class="brand">GG</div>
-    ${navHtml}
-  `;
-
-  const topbar = document.getElementById('topbar');
-  if (topbar) {
-    topbar.innerHTML = `
-      <div>
-        <div class="eyebrow">Get Gorgeous</div>
-        <h1>${pageTitle}</h1>
-      </div>
+  const bar = document.getElementById('topNavBar');
+  if (bar) {
+    const canGoBack = window.history.length > 1 && document.referrer.includes(window.location.origin);
+    bar.innerHTML = `
+      <button class="top-nav-btn ${canGoBack ? '' : 'disabled'}" onclick="goBack()" aria-label="Back">←</button>
+      <a class="top-nav-btn" href="home.html" aria-label="Home">⌂</a>
+      <div class="top-nav-brand">GG</div>
+      <strong style="font-size:0.95rem; flex:1;">${pageTitle}</strong>
       <span class="sync-pill" id="syncPill">
-        <span class="dot"></span> <span id="syncText">Checking…</span>
+        <span class="dot"></span> <span id="syncText">…</span>
       </span>
     `;
   }
@@ -47,6 +22,14 @@ function renderShell(activeHref, pageTitle) {
   updateSyncPill();
   window.addEventListener('online', updateSyncPill);
   window.addEventListener('offline', updateSyncPill);
+}
+
+function goBack() {
+  if (window.history.length > 1 && document.referrer.includes(window.location.origin)) {
+    window.history.back();
+  } else {
+    window.location.href = 'home.html';
+  }
 }
 
 function updateSyncPill() {

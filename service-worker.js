@@ -4,10 +4,11 @@
    the tablet to pick up the new version.
    ============================================ */
 
-const CACHE_NAME = 'get-gorgeous-v9';
+const CACHE_NAME = 'get-gorgeous-v10';
 
 const APP_SHELL = [
   './index.html',
+  './home.html',
   './dashboard.html',
   './customers.html',
   './customer-profile.html',
@@ -72,7 +73,7 @@ self.addEventListener('fetch', (event) => {
           }
           return response;
         })
-        .catch(() => caches.match('./customers.html'));
+        .catch(() => caches.match('./home.html'));
     })
   );
 });

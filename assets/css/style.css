@@ -69,78 +69,57 @@ h3 { font-size: 1.05rem; }
   color: var(--ink-soft);
 }
 
-/* ---------- App shell ---------- */
+/* ---------- App shell (single column — sidebar replaced by top nav bar) ---------- */
 .app-shell {
-  display: grid;
-  grid-template-columns: 92px 1fr;
   height: 100vh;
   overflow: hidden;
-}
-@media (max-width: 720px) {
-  .app-shell { grid-template-columns: 1fr; grid-template-rows: 1fr 76px; }
-  .sidebar { order: 2; flex-direction: row !important; }
-}
-
-.sidebar {
-  background: var(--surface);
-  border-right: 1px solid var(--line);
   display: flex;
   flex-direction: column;
-  align-items: center;
-  padding: 16px 0;
-  gap: 4px;
-  overflow-y: auto;
 }
-.sidebar .brand {
-  width: 44px; height: 44px;
+
+.top-nav-bar {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 10px 14px;
+  background: var(--surface);
+  border-bottom: 1px solid var(--line);
+  flex-shrink: 0;
+}
+.top-nav-btn {
+  width: var(--touch-min);
+  height: var(--touch-min);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  border: none;
+  background: none;
+  color: var(--ink);
+  font-size: 1.3rem;
+  cursor: pointer;
+  text-decoration: none;
+  flex-shrink: 0;
+}
+.top-nav-btn:active { background: var(--surface-sunken); }
+.top-nav-btn.disabled { color: var(--line); pointer-events: none; }
+.top-nav-brand {
+  width: 32px; height: 32px;
   border-radius: 50%;
   background: var(--accent);
   color: #fff;
   display: flex; align-items: center; justify-content: center;
   font-family: var(--font-display);
   font-weight: 700;
-  margin-bottom: 18px;
+  font-size: 0.85rem;
+  margin-right: 4px;
   flex-shrink: 0;
-}
-.nav-item {
-  width: 68px;
-  min-height: var(--touch-min);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 3px;
-  padding: 8px 4px;
-  border-radius: var(--radius-sm);
-  color: var(--ink-soft);
-  text-decoration: none;
-  font-size: 0.68rem;
-  font-weight: 600;
-  position: relative;
-  border: none;
-  background: none;
-  cursor: pointer;
-}
-.nav-item .icon { font-size: 1.25rem; line-height: 1; }
-.nav-item.active {
-  color: var(--accent);
-  background: var(--accent-soft);
-}
-.nav-item.active::before {
-  content: "";
-  position: absolute;
-  left: -8px; top: 50%; transform: translateY(-50%);
-  width: 3px; height: 22px;
-  background: var(--accent);
-  border-radius: 2px;
-}
-@media (max-width: 720px) {
-  .nav-item.active::before { left: 50%; top: -8px; transform: translateX(-50%); width: 22px; height: 3px; }
 }
 
 .main {
   overflow-y: auto;
   padding: 24px 28px 90px;
+  flex: 1;
 }
 .topbar {
   display: flex;
@@ -158,6 +137,40 @@ h3 { font-size: 1.05rem; }
 }
 .sync-pill.offline { background: var(--warn-soft); color: var(--warn); }
 .sync-pill .dot { width: 7px; height: 7px; border-radius: 50%; background: currentColor; }
+
+/* ---------- Launcher (home.html icon grid) ---------- */
+.launcher-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 14px;
+}
+@media (max-width: 720px) { .launcher-grid { grid-template-columns: repeat(3, 1fr); } }
+@media (max-width: 480px) { .launcher-grid { grid-template-columns: repeat(2, 1fr); } }
+.launcher-tile {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 24px 10px;
+  border-radius: var(--radius-lg);
+  background: var(--surface);
+  border: 1px solid var(--line);
+  box-shadow: var(--shadow-card);
+  text-decoration: none;
+  color: var(--ink);
+  min-height: 110px;
+}
+.launcher-tile:active { background: var(--surface-sunken); }
+.launcher-tile .icon {
+  width: 48px; height: 48px;
+  border-radius: 50%;
+  background: var(--accent-soft);
+  color: var(--accent);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.5rem;
+}
+.launcher-tile .label { font-size: 0.85rem; font-weight: 600; text-align: center; }
 
 /* ---------- Cards / surfaces ---------- */
 .card {
@@ -263,5 +276,5 @@ input:focus, select:focus, textarea:focus {
 .text-right { text-align: right; }
 
 @media (prefers-reduced-motion: no-preference) {
-  .card, .nav-item, .btn { transition: background-color 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease; }
+  .card, .top-nav-btn, .launcher-tile, .btn { transition: background-color 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease; }
 }
