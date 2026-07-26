@@ -138,7 +138,11 @@ const DB = {
   },
 
   async getUnsynced(storeName) {
-    return this.getByIndex(storeName, 'synced', false);
+    // NOTE: IndexedDB index queries require a valid key type (string/number/date/array) —
+    // booleans are NOT allowed, so querying the 'synced' index directly with `false` throws.
+    // Fetching everything and filtering in JS sidesteps this (fine at this data scale).
+    const all = await this.getAll(storeName);
+    return all.filter((r) => r.synced === false);
   },
 
   /** Flip synced=true on a record WITHOUT re-dirtying it (unlike .update, which always resets synced:false). */
