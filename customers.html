@@ -32,7 +32,7 @@
       <input type="hidden" id="custId">
       <div class="grid grid-2">
         <div class="field"><label>Name *</label><input type="text" id="custName" required></div>
-        <div class="field"><label>Mobile *</label><input type="tel" id="custMobile" required></div>
+        <div class="field"><label>Mobile *</label><input type="tel" id="custMobile" required inputmode="numeric" maxlength="10" pattern="[0-9]{10}" title="Enter a 10-digit mobile number" placeholder="10-digit number"></div>
         <div class="field"><label>DOB</label><input type="date" id="custDob"></div>
         <div class="field"><label>Anniversary</label><input type="date" id="custAnniversary"></div>
       </div>

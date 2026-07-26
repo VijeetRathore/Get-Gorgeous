@@ -30,6 +30,7 @@
           <div class="flex gap-8 mb-16">
             <select id="serviceSelect" style="flex:1;"></select>
             <button class="btn btn-secondary" onclick="addServiceLine()">Add</button>
+            <button class="btn btn-ghost" onclick="quickServiceModal.showModal()">+ New</button>
           </div>
 
           <label>Add Product Sale</label>
@@ -37,6 +38,7 @@
             <select id="productSelect" style="flex:1;"></select>
             <input id="productQty" type="number" min="1" value="1" style="max-width:90px;">
             <button class="btn btn-secondary" onclick="addProductLine()">Add</button>
+            <button class="btn btn-ghost" onclick="quickProductModal.showModal()">+ New</button>
           </div>
 
           <h3 class="mb-16 mt-16">Bill Items</h3>
@@ -81,6 +83,37 @@
           <a id="confirmWhatsappBtn" class="btn btn-primary" style="width:100%; text-decoration:none; margin-bottom:10px;" href="#" target="_blank">📱 Send Bill on WhatsApp</a>
           <button class="btn btn-secondary" style="width:100%;" onclick="window.location.href='dashboard.html'">Done</button>
         </div>
+      </dialog>
+
+      <!-- Quick Add Service Modal -->
+      <dialog id="quickServiceModal" style="border:none; border-radius: 20px; padding: 0; width: min(420px, 92vw);">
+        <form method="dialog" id="quickServiceForm" class="card" style="border:none; box-shadow:none;">
+          <h2 class="mb-16">New Service</h2>
+          <div class="field"><label>Service Name *</label><input id="qSvcName" required></div>
+          <div class="field"><label>Price (₹) *</label><input id="qSvcPrice" type="number" min="0" required></div>
+          <p class="text-soft" style="font-size:0.78rem;">Tip: to link product consumption for this service, edit it later in Stock → Services.</p>
+          <div class="flex gap-12" style="justify-content: flex-end;">
+            <button type="button" class="btn btn-ghost" onclick="document.getElementById('quickServiceModal').close()">Cancel</button>
+            <button type="submit" class="btn btn-primary">Save Service</button>
+          </div>
+        </form>
+      </dialog>
+
+      <!-- Quick Add Product Modal -->
+      <dialog id="quickProductModal" style="border:none; border-radius: 20px; padding: 0; width: min(420px, 92vw);">
+        <form method="dialog" id="quickProductForm" class="card" style="border:none; box-shadow:none;">
+          <h2 class="mb-16">New Product</h2>
+          <div class="field"><label>Product Name *</label><input id="qProdName" required></div>
+          <div class="grid grid-2">
+            <div class="field"><label>Selling Price (₹) *</label><input id="qProdSellingCost" type="number" min="0" required></div>
+            <div class="field"><label>Opening Stock</label><input id="qProdStock" type="number" min="0" value="0"></div>
+          </div>
+          <p class="text-soft" style="font-size:0.78rem;">More details (brand, cost price, etc.) can be added later in Stock → Products.</p>
+          <div class="flex gap-12" style="justify-content: flex-end;">
+            <button type="button" class="btn btn-ghost" onclick="document.getElementById('quickProductModal').close()">Cancel</button>
+            <button type="submit" class="btn btn-primary">Save Product</button>
+          </div>
+        </form>
       </dialog>
     </main>
   </div>

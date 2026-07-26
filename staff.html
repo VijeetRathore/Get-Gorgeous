@@ -41,7 +41,7 @@
       <input type="hidden" id="stfId">
       <div class="grid grid-2">
         <div class="field"><label>Name *</label><input id="stfName" required></div>
-        <div class="field"><label>Mobile</label><input id="stfMobile" type="tel"></div>
+        <div class="field"><label>Mobile</label><input id="stfMobile" type="tel" inputmode="numeric" maxlength="10" pattern="[0-9]{10}" title="Enter a 10-digit mobile number" placeholder="10-digit number"></div>
       </div>
       <div class="grid grid-2">
         <div class="field"><label>Joining Date</label><input id="stfJoining" type="date"></div>
