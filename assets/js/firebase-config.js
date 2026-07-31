@@ -5,12 +5,12 @@
    ============================================ */
 
 const firebaseConfig = {
-  apiKey: "PASTE-YOUR-API-KEY",
-  authDomain: "PASTE-YOUR-PROJECT.firebaseapp.com",
-  projectId: "PASTE-YOUR-PROJECT-ID",
-  storageBucket: "PASTE-YOUR-PROJECT.appspot.com",
-  messagingSenderId: "PASTE-YOUR-SENDER-ID",
-  appId: "PASTE-YOUR-APP-ID",
+    apiKey: "AIzaSyAHQd71VR8aCquEZ7poypdoN7CfTebcIOo",
+    authDomain: "get-gorgeous-6d112.firebaseapp.com",
+    projectId: "get-gorgeous-6d112",
+    storageBucket: "get-gorgeous-6d112.firebasestorage.app",
+    messagingSenderId: "762139975065",
+    appId: "1:762139975065:web:5e8fd390caf2802b284708"
 };
 
 // Firebase Console → Project Settings → Cloud Messaging tab →
