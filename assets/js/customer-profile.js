@@ -100,6 +100,7 @@ document.getElementById('editForm').addEventListener('submit', async (e) => {
   customer = await DB.update('customers', customerId, data);
   editModal.close();
   loadProfile();
+  Sync.requestSync();
 });
 
 /* ---------- Photos ---------- */
@@ -129,6 +130,7 @@ async function handlePhotoUpload(file, type) {
   const dataUrl = await resizeImageFile(file);
   await DB.add('photos', { customerId, type, localDataUrl: dataUrl, uploaded: false });
   await loadPhotos();
+  Sync.requestSync();
 }
 
 document.getElementById('beforeInput').addEventListener('change', (e) => handlePhotoUpload(e.target.files[0], 'before'));

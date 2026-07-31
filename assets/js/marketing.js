@@ -46,16 +46,23 @@ function updatePreview() {
 }
 
 function updateSendLink() {
+  document.getElementById('mktQueuedNote').style.display = 'none';
+}
+
+async function queueMarketingMessage() {
   const custId = document.getElementById('mktCustomer').value;
   const customer = customers.find(c => c.id === custId);
-  const text = document.getElementById('mktPreview').value;
-  const btn = document.getElementById('mktSendBtn');
-  if (!customer || !customer.mobile) {
-    btn.href = '#';
-    return;
-  }
-  const mobile = customer.mobile;
-  btn.href = buildWhatsAppLink(mobile, text);
+  const text = document.getElementById('mktPreview').value.trim();
+  if (!customer) return alert('Please select a customer.');
+  if (!customer.mobile) return alert('This customer has no mobile number on file.');
+  if (!text) return alert('Message is empty.');
+
+  await DB.add('pendingMessages', {
+    customerId: customer.id, customerName: customer.name, mobile: customer.mobile,
+    message: text, type: 'marketing', status: 'pending',
+  });
+  Sync.requestSync();
+  document.getElementById('mktQueuedNote').style.display = 'block';
 }
 
 /* ---------- Social links ---------- */

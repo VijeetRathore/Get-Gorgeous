@@ -56,6 +56,7 @@ async function saveExpense() {
   document.getElementById('expPhoto').value = '';
 
   await loadExpenses();
+  Sync.requestSync();
 }
 
 async function loadExpenses() {

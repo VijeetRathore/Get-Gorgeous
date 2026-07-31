@@ -35,7 +35,8 @@
             <label>Message Preview (editable)</label>
             <textarea id="mktPreview" rows="6"></textarea>
           </div>
-          <a id="mktSendBtn" class="btn btn-primary" style="width:100%; text-decoration:none;" href="#" target="_blank">Open in WhatsApp</a>
+          <button id="mktSendBtn" class="btn btn-primary" style="width:100%;" onclick="queueMarketingMessage()">📨 Add to WhatsApp Queue</button>
+          <div id="mktQueuedNote" class="text-soft mt-16" style="display:none; font-size:0.85rem;">Queued — will be sent from the official WhatsApp.</div>
         </div>
 
         <div>
@@ -63,6 +64,7 @@
   </div>
 
   <script src="assets/js/db.js"></script>
+  <script src="assets/js/device-id.js"></script>
   <script src="assets/js/shell.js"></script>
   <script src="assets/js/sync.js"></script>
   <script src="assets/js/reminders.js"></script>

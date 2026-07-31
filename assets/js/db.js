@@ -6,7 +6,7 @@
    ============================================ */
 
 const DB_NAME = 'getGorgeousDB';
-const DB_VERSION = 2;
+const DB_VERSION = 4;
 
 const STORES = {
   customers:         { keyPath: 'id', indexes: ['mobile', 'name'] },
@@ -20,6 +20,8 @@ const STORES = {
   photos:             { keyPath: 'id', indexes: ['customerId'] },
   staff:              { keyPath: 'id', indexes: ['name'] },
   attendance:         { keyPath: 'id', indexes: ['staffId', 'date'] },
+  pendingMessages:    { keyPath: 'id', indexes: ['status', 'customerId'] },
+  deviceTokens:       { keyPath: 'deviceId', indexes: ['isMaster'] },
   settings:           { keyPath: 'key', indexes: [] },
 };
 
@@ -180,6 +182,19 @@ const DB = {
         resolve(existing);
       };
       getReq.onerror = (e) => reject(e.target.error);
+    });
+  },
+
+  /** Used only by sync.js when pulling shared data (customers/products/services/staff)
+   *  from Sheets into another phone's local copy. Marks the record synced=true so it
+   *  doesn't get immediately re-pushed as if it were a fresh local change. */
+  async overwriteFromRemote(storeName, id, data) {
+    const db = await openDB();
+    return new Promise((resolve, reject) => {
+      const tx = db.transaction(storeName, 'readwrite');
+      tx.objectStore(storeName).put({ ...data, id, synced: true });
+      tx.oncomplete = () => resolve(true);
+      tx.onerror = (e) => reject(e.target.error);
     });
   },
 

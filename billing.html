@@ -79,7 +79,7 @@
           <div style="font-size:2rem;">✅</div>
           <h2 class="mb-16">Bill Saved</h2>
           <div class="text-soft mb-16" id="confirmSummary"></div>
-          <a id="confirmWhatsappBtn" class="btn btn-primary" style="width:100%; text-decoration:none; margin-bottom:10px;" href="#" target="_blank">📱 Send Bill on WhatsApp</a>
+          <div id="confirmWhatsappNote" class="text-soft mb-16" style="display:none; font-size:0.85rem; background:var(--accent-soft); padding:10px; border-radius:8px;"></div>
           <button class="btn btn-secondary" style="width:100%;" onclick="window.location.href='dashboard.html'">Done</button>
         </div>
       </dialog>
@@ -125,6 +125,7 @@
   </div>
 
   <script src="assets/js/db.js"></script>
+  <script src="assets/js/device-id.js"></script>
   <script src="assets/js/shell.js"></script>
   <script src="assets/js/sync.js"></script>
   <script src="assets/js/reminders.js"></script>

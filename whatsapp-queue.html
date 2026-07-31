@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>WhatsApp Queue — Get Gorgeous</title>
+<link rel="manifest" href="manifest.json">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+  <div class="app-shell">
+    <div class="top-nav-bar" id="topNavBar"></div>
+    <main class="main">
+      <div class="card mb-16" id="masterBanner" style="background:var(--accent-soft); border-color:var(--accent-soft); display:none;">
+        <p style="margin:0; font-size:0.85rem;">👀 <strong>Yeh device master nahi hai</strong> — tum queue dekh sakte ho, par "Send" sirf master device (official WhatsApp wale phone) se hoga.</p>
+      </div>
+
+      <div class="flex gap-8 mb-16">
+        <button class="btn btn-secondary" id="tabBtn-pending" onclick="switchTab('pending')">Pending</button>
+        <button class="btn btn-ghost" id="tabBtn-sent" onclick="switchTab('sent')">Sent</button>
+      </div>
+
+      <div id="tab-pending">
+        <div class="card" style="padding:0;"><div id="pendingList"></div></div>
+      </div>
+      <div id="tab-sent" style="display:none;">
+        <div class="card" style="padding:0;"><div id="sentList"></div></div>
+      </div>
+    </main>
+  </div>
+
+  <script src="assets/js/db.js"></script>
+  <script src="assets/js/device-id.js"></script>
+  <script src="assets/js/shell.js"></script>
+  <script src="assets/js/sync.js"></script>
+  <script src="assets/js/reminders.js"></script>
+  <script src="assets/js/queue.js"></script>
+</body>
+</html>

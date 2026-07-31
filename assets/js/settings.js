@@ -6,7 +6,7 @@ renderShell('settings.html', 'Settings');
 
 const BACKUP_STORES = [
   'customers', 'appointments', 'services', 'bills', 'products',
-  'purchases', 'stockTransactions', 'expenses', 'photos', 'staff', 'attendance',
+  'purchases', 'stockTransactions', 'expenses', 'photos', 'staff', 'attendance', 'deviceTokens',
 ];
 
 async function init() {
@@ -15,12 +15,42 @@ async function init() {
   document.getElementById('setGasUrl').value = gasUrl;
   document.getElementById('setGasToken').value = gasToken;
 
+  document.getElementById('myDeviceId').textContent = window.DEVICE_ID;
+  await loadDeviceList();
+  await refreshPushStatus();
+
   await refreshSyncStatus();
   await refreshNotifStatus();
 
   document.getElementById('restoreFile').addEventListener('change', (e) => {
     if (e.target.files[0]) restoreFromFile(e.target.files[0]);
   });
+}
+
+async function loadDeviceList() {
+  const devices = await DB.getAll('deviceTokens');
+  const el = document.getElementById('deviceList');
+  if (!devices.length) {
+    el.innerHTML = '<div class="text-soft" style="font-size:0.85rem;">Koi device abhi tak register nahi hua.</div>';
+    return;
+  }
+  el.innerHTML = devices
+    .sort((a, b) => new Date(b.lastSeenAt || 0) - new Date(a.lastSeenAt || 0))
+    .map(d => `
+      <div class="list-row" style="flex-wrap:wrap; gap:8px;">
+        <div>
+          <div style="font-weight:600;">${d.label || d.deviceId} ${d.deviceId === window.DEVICE_ID ? '<span class="badge">this device</span>' : ''}</div>
+          <div class="text-soft" style="font-size:0.75rem;">${d.deviceId} · last seen ${d.lastSeenAt ? fmtDateTime(d.lastSeenAt) : '—'}</div>
+        </div>
+        <button class="btn ${d.isMaster ? 'btn-primary' : 'btn-secondary'}" onclick="toggleMaster('${d.deviceId}', ${!d.isMaster})">${d.isMaster ? '★ Master' : 'Make Master'}</button>
+      </div>
+    `).join('');
+}
+
+async function toggleMaster(deviceId, makeMaster) {
+  await DB.update('deviceTokens', deviceId, { isMaster: makeMaster });
+  Sync.requestSync();
+  await loadDeviceList();
 }
 
 async function refreshSyncStatus() {

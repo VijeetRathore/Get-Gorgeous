@@ -86,6 +86,7 @@ function renderStatusActions(appt) {
 async function advanceStatus(id, status) {
   await DB.update('appointments', id, { status });
   await loadAppointments();
+  Sync.requestSync();
 }
 
 function openApptModal() {
@@ -125,6 +126,7 @@ document.getElementById('apptForm').addEventListener('submit', async () => {
   }
   document.getElementById('apptModal').close();
   await loadAppointments();
+  Sync.requestSync();
 });
 
 init();

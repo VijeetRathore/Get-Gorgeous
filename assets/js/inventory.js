@@ -97,6 +97,7 @@ document.getElementById('productForm').addEventListener('submit', async () => {
   }
   document.getElementById('productModal').close();
   await loadProducts();
+  Sync.requestSync();
 });
 
 /* ---------- Purchases (multiple products per invoice) ---------- */
@@ -152,6 +153,7 @@ async function recordPurchase() {
 
   await loadProducts();
   await loadPurchases();
+  Sync.requestSync();
 }
 
 async function loadPurchases() {
@@ -257,6 +259,7 @@ document.getElementById('serviceForm').addEventListener('submit', async () => {
   }
   document.getElementById('serviceModal').close();
   await loadServices();
+  Sync.requestSync();
 });
 
 (async function init() {

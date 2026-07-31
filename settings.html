@@ -51,10 +51,23 @@
             <button class="btn btn-secondary" onclick="restoreFromCloud()">Restore from Cloud</button>
           </div>
 
-          <div class="card">
+          <div class="card mb-16">
             <h3 class="mb-16">🔒 Change PIN</h3>
             <div class="field"><label>New PIN</label><input type="password" id="newPin" inputmode="numeric" maxlength="6"></div>
             <button class="btn btn-secondary" onclick="changePin()">Update PIN</button>
+          </div>
+
+          <div class="card mb-16">
+            <h3 class="mb-16">📱 Devices &amp; Master Access</h3>
+            <p class="text-soft mb-16" style="font-size:0.85rem;">Sirf "Master" device Dashboard/Reports/Settings khol sakte hai, aur WhatsApp Queue se Send kar sakte hai. Is device ki ID: <strong id="myDeviceId"></strong></p>
+            <div id="deviceList"></div>
+          </div>
+
+          <div class="card">
+            <h3 class="mb-16">🔔 Push Notifications (Master Device)</h3>
+            <p class="text-soft mb-16" style="font-size:0.85rem;">Naya bill queue mein aate hi is device pe notification aayega — app band ho tab bhi.</p>
+            <div class="list-row"><span>Status</span><span id="pushStatus" class="text-soft">—</span></div>
+            <button class="btn btn-secondary" onclick="enablePush()">Enable Push Notifications</button>
           </div>
         </div>
       </div>
@@ -62,10 +75,16 @@
   </div>
 
   <script src="assets/js/db.js"></script>
+  <script src="assets/js/device-id.js"></script>
+  <script src="assets/js/device-guard.js"></script>
   <script src="assets/js/pin-guard.js"></script>
   <script src="assets/js/shell.js"></script>
   <script src="assets/js/sync.js"></script>
   <script src="assets/js/reminders.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-messaging-compat.js"></script>
+  <script src="assets/js/firebase-config.js"></script>
+  <script src="assets/js/push-notify.js"></script>
   <script src="assets/js/settings.js"></script>
 </body>
 </html>

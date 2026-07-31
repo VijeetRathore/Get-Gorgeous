@@ -154,10 +154,11 @@ async function saveBill() {
   const newPoints = Math.max(0, (customer.loyaltyPoints || 0) - redeem + pointsEarned);
   await DB.update('customers', custId, { loyaltyPoints: newPoints });
 
-  showBillConfirmation(bill, customer, newPoints);
+  Sync.requestSync();
+  await showBillConfirmation(bill, customer, newPoints);
 }
 
-function showBillConfirmation(bill, customer, newPointsBalance) {
+async function showBillConfirmation(bill, customer, newPointsBalance) {
   document.getElementById('confirmSummary').innerHTML =
     `${customer.name} — <strong>${fmtCurrency(bill.total)}</strong> (${bill.paymentMode})<br>+${bill.pointsEarned} loyalty points earned`;
 
@@ -168,12 +169,17 @@ function showBillConfirmation(bill, customer, newPointsBalance) {
   message += `Total Paid: ${fmtCurrency(bill.total)} (${bill.paymentMode})\n`;
   message += `Loyalty Points Earned: +${bill.pointsEarned} (Balance: ${newPointsBalance})\n\nSee you again soon!`;
 
-  const waBtn = document.getElementById('confirmWhatsappBtn');
+  const waNote = document.getElementById('confirmWhatsappNote');
   if (customer.mobile) {
-    waBtn.href = buildWhatsAppLink(customer.mobile, message);
-    waBtn.style.display = 'inline-flex';
+    await DB.add('pendingMessages', {
+      customerId: customer.id, customerName: customer.name, mobile: customer.mobile,
+      message, type: 'bill', status: 'pending',
+    });
+    Sync.requestSync();
+    waNote.textContent = '📨 Bill message queued — will be sent from the salon\'s official WhatsApp shortly.';
+    waNote.style.display = 'block';
   } else {
-    waBtn.style.display = 'none';
+    waNote.style.display = 'none';
   }
 
   document.getElementById('billConfirmModal').showModal();
@@ -194,6 +200,7 @@ document.getElementById('quickServiceForm').addEventListener('submit', async () 
 
   document.getElementById('quickServiceForm').reset();
   quickServiceModal.close();
+  Sync.requestSync();
 });
 
 document.getElementById('quickProductForm').addEventListener('submit', async () => {
@@ -210,6 +217,7 @@ document.getElementById('quickProductForm').addEventListener('submit', async () 
 
   document.getElementById('quickProductForm').reset();
   quickProductModal.close();
+  Sync.requestSync();
 });
 
 init();

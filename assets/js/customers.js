@@ -74,6 +74,7 @@ form.addEventListener('submit', async (e) => {
   }
   modal.close();
   loadCustomers();
+  Sync.requestSync();
 });
 
 loadCustomers();

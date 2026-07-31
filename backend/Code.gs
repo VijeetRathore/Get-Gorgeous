@@ -10,6 +10,19 @@
         - Who has access: Anyone
       Click Deploy, copy the Web App URL.
    6. Paste that URL + your SECRET_TOKEN into the app's Settings page.
+
+   FOR PUSH NOTIFICATIONS (optional but you asked for it):
+   7. Set up a Firebase project (see the separate instructions given
+      alongside this file) and get a service account key.
+   8. In THIS Apps Script project: Project Settings (⚙ left sidebar)
+      → Script Properties → Add 3 properties:
+        FCM_PROJECT_ID, FCM_CLIENT_EMAIL, FCM_PRIVATE_KEY
+      (values come from the Firebase service account JSON file —
+      NEVER put these directly in this code file, since this file
+      may end up in a public GitHub repo; Script Properties stays
+      private to this Apps Script project.)
+   9. Whenever you edit this file, redeploy: Deploy → Manage
+      deployments → Edit (pencil) → New version → Deploy.
    ============================================ */
 
 const SECRET_TOKEN = 'CHANGE-THIS-TO-A-LONG-RANDOM-STRING';
@@ -17,7 +30,7 @@ const DRIVE_FOLDER_ID = 'PASTE-YOUR-DRIVE-FOLDER-ID-HERE';
 
 const SHEET_NAMES = [
   'customers', 'appointments', 'services', 'bills', 'products',
-  'purchases', 'stockTransactions', 'expenses', 'staff', 'attendance',
+  'purchases', 'stockTransactions', 'expenses', 'staff', 'attendance', 'pendingMessages', 'deviceTokens',
 ];
 
 function doPost(e) {
@@ -75,6 +88,14 @@ function pushRecords(storeName, records) {
   });
 
   logSync(storeName, records.length);
+
+  if (storeName === 'pendingMessages') {
+    const newPending = records.filter((r) => r.status === 'pending');
+    if (newPending.length) {
+      try { notifyMasterDevices(newPending.length); } catch (err) { /* don't fail the sync over a notification error */ }
+    }
+  }
+
   return { ok: true, synced: records.length };
 }
 
@@ -151,4 +172,99 @@ function logSync(storeName, count) {
 
 function jsonResponse(obj) {
   return ContentService.createTextOutput(JSON.stringify(obj)).setMimeType(ContentService.MimeType.JSON);
+}
+
+/* ============================================
+   Push Notifications (Firebase Cloud Messaging)
+   Requires Script Properties (Project Settings ⚙ →
+   Script Properties in the Apps Script editor):
+     FCM_PROJECT_ID   → Firebase project ID
+     FCM_CLIENT_EMAIL → service account "client_email"
+     FCM_PRIVATE_KEY  → service account "private_key"
+                        (paste exactly as in the JSON file,
+                        including the \n sequences)
+   ============================================ */
+
+function notifyMasterDevices(count) {
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  const sheet = ss.getSheetByName('deviceTokens');
+  if (!sheet || sheet.getLastRow() < 2) return;
+
+  const values = sheet.getDataRange().getValues();
+  const headers = values[0];
+  const tokenIdx = headers.indexOf('fcmToken');
+  const masterIdx = headers.indexOf('isMaster');
+  if (tokenIdx === -1 || masterIdx === -1) return;
+
+  let accessToken = null;
+
+  for (let i = 1; i < values.length; i++) {
+    const row = values[i];
+    const isMaster = row[masterIdx] === true || row[masterIdx] === 'TRUE';
+    const token = row[tokenIdx];
+    if (!isMaster || !token) continue;
+
+    if (!accessToken) accessToken = getFCMAccessToken(); // fetch once, reuse for all devices
+    try {
+      sendPushNotification(accessToken, token, 'New WhatsApp Message to Send',
+        `${count} bill/offer message(s) waiting in the WhatsApp Queue`);
+    } catch (err) { /* keep trying other devices */ }
+  }
+}
+
+function getFCMAccessToken() {
+  const props = PropertiesService.getScriptProperties();
+  const clientEmail = props.getProperty('FCM_CLIENT_EMAIL');
+  const privateKey = props.getProperty('FCM_PRIVATE_KEY').replace(/\\n/g, '\n');
+
+  const header = { alg: 'RS256', typ: 'JWT' };
+  const now = Math.floor(Date.now() / 1000);
+  const claimSet = {
+    iss: clientEmail,
+    scope: 'https://www.googleapis.com/auth/firebase.messaging',
+    aud: 'https://oauth2.googleapis.com/token',
+    exp: now + 3600,
+    iat: now,
+  };
+
+  const base64url = (obj) => Utilities.base64EncodeWebSafe(JSON.stringify(obj)).replace(/=+$/, '');
+  const toSign = base64url(header) + '.' + base64url(claimSet);
+  const signatureBytes = Utilities.computeRsaSha256Signature(toSign, privateKey);
+  const signature = Utilities.base64EncodeWebSafe(signatureBytes).replace(/=+$/, '');
+  const jwt = toSign + '.' + signature;
+
+  const response = UrlFetchApp.fetch('https://oauth2.googleapis.com/token', {
+    method: 'post',
+    contentType: 'application/x-www-form-urlencoded',
+    payload: {
+      grant_type: 'urn:ietf:params:oauth:grant-type:jwt-bearer',
+      assertion: jwt,
+    },
+    muteHttpExceptions: true,
+  });
+  const json = JSON.parse(response.getContentText());
+  if (!json.access_token) throw new Error('FCM auth failed: ' + response.getContentText());
+  return json.access_token;
+}
+
+function sendPushNotification(accessToken, fcmToken, title, body) {
+  const projectId = PropertiesService.getScriptProperties().getProperty('FCM_PROJECT_ID');
+  const message = {
+    message: {
+      token: fcmToken,
+      notification: { title: title, body: body },
+      webpush: {
+        notification: { icon: '/assets/icons/icon-192.png' },
+        fcm_options: { link: '/whatsapp-queue.html' },
+      },
+    },
+  };
+
+  UrlFetchApp.fetch(`https://fcm.googleapis.com/v1/projects/${projectId}/messages:send`, {
+    method: 'post',
+    contentType: 'application/json',
+    headers: { Authorization: 'Bearer ' + accessToken },
+    payload: JSON.stringify(message),
+    muteHttpExceptions: true,
+  });
 }

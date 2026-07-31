@@ -78,6 +78,7 @@ document.getElementById('staffForm').addEventListener('submit', async (e) => {
   }
   document.getElementById('staffModal').close();
   await loadStaff();
+  Sync.requestSync();
 });
 
 /* ---------- Attendance ---------- */
@@ -116,6 +117,7 @@ async function markAttendance(staffId, status) {
     await DB.add('attendance', { staffId, date: todayStr, status });
   }
   await loadAttendance();
+  Sync.requestSync();
 }
 
 (async function init() {

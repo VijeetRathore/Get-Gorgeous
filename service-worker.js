@@ -1,10 +1,31 @@
 /* ============================================
    service-worker.js — offline app shell caching
+   + Firebase Cloud Messaging background handler
+   (kept in this SAME file, not a separate
+   firebase-messaging-sw.js, so there's only one
+   service worker controlling this site's scope).
    Bump CACHE_NAME whenever files change to force
-   the tablet to pick up the new version.
+   devices to pick up the new version.
    ============================================ */
 
-const CACHE_NAME = 'get-gorgeous-v11';
+importScripts('https://www.gstatic.com/firebasejs/10.7.0/firebase-app-compat.js');
+importScripts('https://www.gstatic.com/firebasejs/10.7.0/firebase-messaging-compat.js');
+importScripts('./assets/js/firebase-config.js');
+
+try {
+  firebase.initializeApp(firebaseConfig);
+  const messaging = firebase.messaging();
+  messaging.onBackgroundMessage((payload) => {
+    const title = (payload.notification && payload.notification.title) || 'Get Gorgeous';
+    const options = {
+      body: (payload.notification && payload.notification.body) || '',
+      icon: './assets/icons/icon-192.png',
+    };
+    self.registration.showNotification(title, options);
+  });
+} catch (e) { /* Firebase not configured yet — push just won't work until it is */ }
+
+const CACHE_NAME = 'get-gorgeous-v14';
 
 const APP_SHELL = [
   './index.html',
@@ -18,15 +39,20 @@ const APP_SHELL = [
   './expenses.html',
   './staff.html',
   './marketing.html',
+  './whatsapp-queue.html',
   './reports.html',
   './settings.html',
   './manifest.json',
   './assets/css/style.css',
   './assets/js/db.js',
+  './assets/js/device-id.js',
+  './assets/js/device-guard.js',
   './assets/js/shell.js',
   './assets/js/pin-guard.js',
   './assets/js/sync.js',
   './assets/js/reminders.js',
+  './assets/js/firebase-config.js',
+  './assets/js/push-notify.js',
   './assets/js/settings.js',
   './assets/js/customers.js',
   './assets/js/customer-profile.js',
@@ -36,6 +62,7 @@ const APP_SHELL = [
   './assets/js/expenses.js',
   './assets/js/staff.js',
   './assets/js/marketing.js',
+  './assets/js/queue.js',
   './assets/js/reports.js',
   './assets/icons/icon-192.png',
   './assets/icons/icon-512.png',
