@@ -15,4 +15,4 @@ const firebaseConfig = {
 
 // Firebase Console → Project Settings → Cloud Messaging tab →
 // "Web configuration" → Web Push certificates → generate/copy the key
-const VAPID_KEY = "PASTE-YOUR-VAPID-KEY";
+const VAPID_KEY = "BHaieopruMzY1lvUYqBW_OM9zDrRYMmm6Ez59S8HO6g-Ap5YxvPL3-kBXgu0fbTctb9kfRZ-sZrONwOijA05vg8";
