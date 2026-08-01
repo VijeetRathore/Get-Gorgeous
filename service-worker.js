@@ -25,7 +25,7 @@ try {
   });
 } catch (e) { /* Firebase not configured yet — push just won't work until it is */ }
 
-const CACHE_NAME = 'get-gorgeous-v14';
+const CACHE_NAME = 'get-gorgeous-v15';
 
 const APP_SHELL = [
   './index.html',
@@ -47,6 +47,7 @@ const APP_SHELL = [
   './assets/js/db.js',
   './assets/js/device-id.js',
   './assets/js/device-guard.js',
+  './assets/js/app-config.js',
   './assets/js/shell.js',
   './assets/js/pin-guard.js',
   './assets/js/sync.js',

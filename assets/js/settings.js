@@ -10,14 +10,10 @@ const BACKUP_STORES = [
 ];
 
 async function init() {
-  const gasUrl = await DB.getSetting('gasUrl', '');
-  const gasToken = await DB.getSetting('gasToken', '');
-  document.getElementById('setGasUrl').value = gasUrl;
-  document.getElementById('setGasToken').value = gasToken;
-
   document.getElementById('myDeviceId').textContent = window.DEVICE_ID;
   await loadDeviceList();
   await refreshPushStatus();
+  await autoPromptPushIfMaster();
 
   await refreshSyncStatus();
   await refreshNotifStatus();
@@ -53,6 +49,19 @@ async function toggleMaster(deviceId, makeMaster) {
   await loadDeviceList();
 }
 
+async function autoPromptPushIfMaster() {
+  if (typeof Notification === 'undefined') return;
+  const amMaster = await isMasterDevice();
+  const me = await DB.get('deviceTokens', window.DEVICE_ID);
+  const alreadyEnabled = me && me.fcmToken;
+  if (amMaster && !alreadyEnabled && Notification.permission === 'default') {
+    // Auto-trigger — the browser's own permission dialog still needs one tap
+    // (no website can skip that), but at least the user doesn't have to hunt
+    // for a button first.
+    await enablePush();
+  }
+}
+
 async function refreshSyncStatus() {
   const { configured } = await Sync.getSyncConfig();
   document.getElementById('syncStatusText').textContent = configured ? 'Configured' : 'Not configured';
@@ -62,13 +71,6 @@ async function refreshSyncStatus() {
 
   const pending = await Sync.getPendingCount();
   document.getElementById('pendingCount').textContent = pending;
-}
-
-async function saveSyncConfig() {
-  await DB.setSetting('gasUrl', document.getElementById('setGasUrl').value.trim());
-  await DB.setSetting('gasToken', document.getElementById('setGasToken').value.trim());
-  await refreshSyncStatus();
-  alert('Sync settings saved.');
 }
 
 async function runSyncNow() {

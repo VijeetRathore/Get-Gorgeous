@@ -141,11 +141,9 @@ h3 { font-size: 1.05rem; }
 /* ---------- Launcher (home.html icon grid) ---------- */
 .launcher-grid {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
   gap: 14px;
 }
-@media (max-width: 720px) { .launcher-grid { grid-template-columns: repeat(3, 1fr); } }
-@media (max-width: 480px) { .launcher-grid { grid-template-columns: repeat(2, 1fr); } }
 .launcher-tile {
   display: flex;
   flex-direction: column;

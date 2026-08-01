@@ -35,9 +35,10 @@ let _syncing = false;
 let _pulling = false;
 
 async function getSyncConfig() {
-  const gasUrl = await DB.getSetting('gasUrl', '');
-  const gasToken = await DB.getSetting('gasToken', '');
-  return { gasUrl, gasToken, configured: !!(gasUrl && gasToken) };
+  const gasUrl = GAS_URL;
+  const gasToken = GAS_TOKEN;
+  const configured = !!(gasUrl && gasToken && !gasUrl.startsWith('PASTE-') && !gasToken.startsWith('PASTE-'));
+  return { gasUrl, gasToken, configured };
 }
 
 /* ---------- PUSH ---------- */
