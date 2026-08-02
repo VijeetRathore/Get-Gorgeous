@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0B0B0B">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>Install Get Gorgeous</title>
+<link rel="manifest" href="manifest.json">
+<style>
+  :root { color-scheme: dark; }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; min-height: 100vh; min-height: 100svh;
+    display: grid; place-items: center;
+    padding: 24px;
+    font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    background:
+      radial-gradient(circle at 50% 10%, rgba(218,166,76,.16), transparent 34%),
+      #0b0b0b;
+    color: #fff;
+  }
+  .card {
+    width: min(430px, 100%);
+    text-align: center;
+    padding: 30px 24px 26px;
+    border: 1px solid rgba(218,166,76,.35);
+    border-radius: 28px;
+    background: linear-gradient(180deg, rgba(255,255,255,.055), rgba(255,255,255,.025));
+    box-shadow: 0 22px 70px rgba(0,0,0,.55);
+  }
+  .icon {
+    width: 128px; height: 128px; object-fit: cover;
+    border-radius: 28px;
+    display: block; margin: 0 auto 20px;
+    box-shadow: 0 12px 40px rgba(0,0,0,.55);
+  }
+  h1 { margin: 0; font-family: Georgia, serif; font-size: 32px; color: #f3cf80; }
+  .sub { margin: 7px 0 22px; color: #f3a6bd; letter-spacing: 3px; font-size: 12px; font-weight: 700; }
+  p { color: #d7d7d7; line-height: 1.55; margin: 0 auto 22px; max-width: 340px; }
+  button, .open {
+    width: 100%; border: 0; border-radius: 15px; padding: 15px 18px;
+    font-size: 16px; font-weight: 800; cursor: pointer; text-decoration: none;
+    display: block;
+  }
+  button { background: linear-gradient(135deg,#f6d88e,#c78b28); color: #17100a; }
+  button:disabled { opacity: .55; cursor: default; }
+  .open { margin-top: 10px; border: 1px solid rgba(255,255,255,.16); color: #fff; background: rgba(255,255,255,.06); }
+  .status { min-height: 22px; margin-top: 16px; color: #e8c981; font-size: 13px; }
+  .note { margin-top: 18px; font-size: 12px; color: #888; }
+  .ios { display:none; margin-top:16px; padding:12px; border-radius:12px; background:rgba(255,255,255,.06); color:#bbb; font-size:13px; line-height:1.5; }
+</style>
+</head>
+<body>
+  <main class="card">
+    <img class="icon" src="assets/icons/icon-512.png" alt="Get Gorgeous Beauty Salon">
+    <h1>Get Gorgeous</h1>
+    <div class="sub">BEAUTY SALON</div>
+    <p>Install the Get Gorgeous Salon App on your phone or tablet for quick access.</p>
+
+    <button id="installBtn" type="button">✨ Install App</button>
+    <a class="open" href="home.html">Open App</a>
+
+    <div id="status" class="status" aria-live="polite"></div>
+    <div id="iosHelp" class="ios">
+      On iPhone/iPad, tap <b>Share</b> → <b>Add to Home Screen</b>.
+    </div>
+    <div class="note">The browser will show its official install confirmation.</div>
+  </main>
+
+<script>
+(() => {
+  let deferredPrompt = null;
+  const installBtn = document.getElementById('installBtn');
+  const status = document.getElementById('status');
+  const iosHelp = document.getElementById('iosHelp');
+
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('./service-worker.js').catch(() => {});
+  }
+
+  window.addEventListener('beforeinstallprompt', (event) => {
+    event.preventDefault();
+    deferredPrompt = event;
+    installBtn.disabled = false;
+    status.textContent = 'Ready to install on this device.';
+  });
+
+  window.addEventListener('appinstalled', () => {
+    deferredPrompt = null;
+    installBtn.disabled = true;
+    installBtn.textContent = '✓ App Installed';
+    status.textContent = 'Get Gorgeous has been installed successfully.';
+  });
+
+  installBtn.addEventListener('click', async () => {
+    if (!deferredPrompt) {
+      status.textContent = 'If no install prompt appears, use your browser menu → Install app / Add to Home screen.';
+      return;
+    }
+    installBtn.disabled = true;
+    deferredPrompt.prompt();
+    const result = await deferredPrompt.userChoice;
+    if (result.outcome === 'accepted') {
+      status.textContent = 'Installing Get Gorgeous…';
+    } else {
+      status.textContent = 'Installation cancelled. You can try again anytime.';
+      installBtn.disabled = false;
+    }
+    deferredPrompt = null;
+  });
+
+  const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent) &&
+                !window.MSStream;
+  const isStandalone = window.matchMedia('(display-mode: standalone)').matches ||
+                       window.navigator.standalone === true;
+  if (isIOS && !isStandalone) {
+    iosHelp.style.display = 'block';
+  }
+  if (isStandalone) {
+    installBtn.disabled = true;
+    installBtn.textContent = '✓ App Already Installed';
+    status.textContent = 'You are already using the installed app.';
+  }
+})();
+</script>
+</body>
+</html>

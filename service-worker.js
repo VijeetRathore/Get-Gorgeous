@@ -29,6 +29,7 @@ const CACHE_NAME = 'get-gorgeous-v16';
 
 const APP_SHELL = [
   './index.html',
+  './install.html',
   './home.html',
   './dashboard.html',
   './customers.html',
@@ -80,6 +81,7 @@ const APP_SHELL = [
   './assets/js/reports.js',
   './assets/icons/icon-192.png',
   './assets/icons/icon-512.png',
+  './assets/icons/icon-512-maskable.png',
 ];
 
 self.addEventListener('install', (event) => {
