@@ -1,0 +1,5 @@
+/* ============================================
+   expenses.css — expenses.html only
+   ============================================ */
+
+#expensesLayout { --split-ratio: 1fr 1.4fr; }

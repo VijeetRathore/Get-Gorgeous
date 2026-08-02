@@ -1,0 +1,8 @@
+/* ============================================
+   billing.css — billing.html only
+   ============================================ */
+
+/* Uses the shared .split-layout from base.css (responsive —
+   stacks to one column below 860px). Bill builder gets more
+   room than the summary panel. */
+#billLayout { --split-ratio: 1.6fr 1fr; }

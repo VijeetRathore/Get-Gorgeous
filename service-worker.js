@@ -25,7 +25,7 @@ try {
   });
 } catch (e) { /* Firebase not configured yet — push just won't work until it is */ }
 
-const CACHE_NAME = 'get-gorgeous-v15';
+const CACHE_NAME = 'get-gorgeous-v16';
 
 const APP_SHELL = [
   './index.html',
@@ -43,7 +43,20 @@ const APP_SHELL = [
   './reports.html',
   './settings.html',
   './manifest.json',
-  './assets/css/style.css',
+  './assets/css/base.css',
+  './assets/css/home.css',
+  './assets/css/dashboard.css',
+  './assets/css/customers.css',
+  './assets/css/customer-profile.css',
+  './assets/css/billing.css',
+  './assets/css/inventory.css',
+  './assets/css/appointments.css',
+  './assets/css/expenses.css',
+  './assets/css/staff.css',
+  './assets/css/marketing.css',
+  './assets/css/whatsapp-queue.css',
+  './assets/css/reports.css',
+  './assets/css/settings.css',
   './assets/js/db.js',
   './assets/js/device-id.js',
   './assets/js/device-guard.js',

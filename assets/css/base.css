@@ -1,8 +1,10 @@
 /* ============================================
-   Get Gorgeous — Design Tokens
-   Signature: "vanity mirror" cards — soft rounded
-   surfaces with a berry accent bar that lights up
-   on the active section, echoing a lit mirror frame.
+   base.css — SHARED across every page
+   Design tokens, app shell, and common components
+   (cards, buttons, forms, lists, badges).
+   Page-specific layout lives in assets/css/<page>.css
+   — edit THAT file for a single page, not this one,
+   unless the change should apply app-wide.
    ============================================ */
 
 :root {
@@ -37,8 +39,9 @@
   --touch-min: 48px;
 }
 
-* { box-sizing: border-box; }
+* { box-sizing: border-box; max-width: 100%; }
 html, body { height: 100%; }
+html { overflow-x: hidden; }
 
 body {
   margin: 0;
@@ -48,6 +51,7 @@ body {
   font-size: 16px;
   line-height: 1.45;
   -webkit-tap-highlight-color: transparent;
+  overflow-x: hidden;
 }
 
 h1, h2, h3, .display {
@@ -69,7 +73,7 @@ h3 { font-size: 1.05rem; }
   color: var(--ink-soft);
 }
 
-/* ---------- App shell (single column — sidebar replaced by top nav bar) ---------- */
+/* ---------- App shell (single column, top nav bar) ---------- */
 .app-shell {
   height: 100vh;
   overflow: hidden;
@@ -118,9 +122,13 @@ h3 { font-size: 1.05rem; }
 
 .main {
   overflow-y: auto;
-  padding: 24px 28px 90px;
+  overflow-x: hidden;
+  padding: 20px 16px 90px;
   flex: 1;
+  width: 100%;
 }
+@media (min-width: 640px) { .main { padding: 24px 28px 90px; } }
+
 .topbar {
   display: flex;
   align-items: center;
@@ -134,41 +142,10 @@ h3 { font-size: 1.05rem; }
   font-size: 0.75rem; font-weight: 600;
   padding: 6px 12px; border-radius: 999px;
   background: var(--success-soft); color: var(--success);
+  white-space: nowrap;
 }
 .sync-pill.offline { background: var(--warn-soft); color: var(--warn); }
-.sync-pill .dot { width: 7px; height: 7px; border-radius: 50%; background: currentColor; }
-
-/* ---------- Launcher (home.html icon grid) ---------- */
-.launcher-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-  gap: 14px;
-}
-.launcher-tile {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
-  padding: 24px 10px;
-  border-radius: var(--radius-lg);
-  background: var(--surface);
-  border: 1px solid var(--line);
-  box-shadow: var(--shadow-card);
-  text-decoration: none;
-  color: var(--ink);
-  min-height: 110px;
-}
-.launcher-tile:active { background: var(--surface-sunken); }
-.launcher-tile .icon {
-  width: 48px; height: 48px;
-  border-radius: 50%;
-  background: var(--accent-soft);
-  color: var(--accent);
-  display: flex; align-items: center; justify-content: center;
-  font-size: 1.5rem;
-}
-.launcher-tile .label { font-size: 0.85rem; font-weight: 600; text-align: center; }
+.sync-pill .dot { width: 7px; height: 7px; border-radius: 50%; background: currentColor; flex-shrink: 0; }
 
 /* ---------- Cards / surfaces ---------- */
 .card {
@@ -176,11 +153,15 @@ h3 { font-size: 1.05rem; }
   border: 1px solid var(--line);
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-card);
-  padding: 18px;
+  padding: 16px;
+  min-width: 0;
 }
+@media (min-width: 640px) { .card { padding: 18px; } }
+
 .grid {
   display: grid;
   gap: 14px;
+  min-width: 0;
 }
 .grid-4 { grid-template-columns: repeat(4, 1fr); }
 .grid-3 { grid-template-columns: repeat(3, 1fr); }
@@ -188,12 +169,30 @@ h3 { font-size: 1.05rem; }
 @media (max-width: 900px) { .grid-4 { grid-template-columns: repeat(2, 1fr); } .grid-3 { grid-template-columns: repeat(2, 1fr); } }
 @media (max-width: 560px) { .grid-4, .grid-3, .grid-2 { grid-template-columns: 1fr; } }
 
+/* Two-column "detail" layouts (e.g. form + summary side panels).
+   Stacks to one column below 860px — use this instead of a raw
+   inline grid-template-columns, which does NOT respond to mobile
+   width and causes horizontal overflow/cut-off content. */
+.split-layout {
+  display: grid;
+  grid-template-columns: var(--split-ratio, 1.4fr 1fr);
+  gap: 16px;
+  align-items: start;
+  min-width: 0;
+}
+@media (max-width: 860px) {
+  .split-layout { grid-template-columns: 1fr; }
+}
+.split-layout > * { min-width: 0; }
+
 .stat-card .value {
   font-family: var(--font-display);
-  font-size: 1.9rem;
+  font-size: 1.7rem;
   font-weight: 600;
   margin-top: 4px;
+  word-break: break-word;
 }
+@media (min-width: 640px) { .stat-card .value { font-size: 1.9rem; } }
 .stat-card .label { color: var(--ink-soft); font-size: 0.82rem; }
 .stat-card.gold .value { color: var(--gold); }
 .stat-card.accent .value { color: var(--accent); }
@@ -244,6 +243,8 @@ input:focus, select:focus, textarea:focus {
   padding: 14px 4px;
   border-bottom: 1px solid var(--line);
   min-height: var(--touch-min);
+  gap: 8px;
+  min-width: 0;
 }
 .list-row:last-child { border-bottom: none; }
 .badge {
@@ -251,6 +252,7 @@ input:focus, select:focus, textarea:focus {
   padding: 3px 9px; border-radius: 999px;
   background: var(--accent-soft); color: var(--accent);
   text-transform: uppercase; letter-spacing: 0.03em;
+  white-space: nowrap;
 }
 .badge.gold { background: var(--gold-soft); color: var(--gold); }
 .badge.success { background: var(--success-soft); color: var(--success); }

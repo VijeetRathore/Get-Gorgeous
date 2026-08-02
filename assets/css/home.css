@@ -1,0 +1,36 @@
+/* ============================================
+   home.css — home.html (launcher icon grid) only
+   ============================================ */
+
+.launcher-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+  gap: 12px;
+}
+
+.launcher-tile {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 20px 8px;
+  border-radius: var(--radius-lg);
+  background: var(--surface);
+  border: 1px solid var(--line);
+  box-shadow: var(--shadow-card);
+  text-decoration: none;
+  color: var(--ink);
+  min-height: 100px;
+}
+.launcher-tile:active { background: var(--surface-sunken); }
+.launcher-tile .icon {
+  width: 44px; height: 44px;
+  border-radius: 50%;
+  background: var(--accent-soft);
+  color: var(--accent);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.4rem;
+  flex-shrink: 0;
+}
+.launcher-tile .label { font-size: 0.8rem; font-weight: 600; text-align: center; }
